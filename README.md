@@ -1,2 +1,2 @@
 # aroma
-Library to prepare asynchronous time series datasets
+A python library to prepare asynchronous time series datasets

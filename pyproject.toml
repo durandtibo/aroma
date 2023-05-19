@@ -1,0 +1,177 @@
+[tool.poetry]
+name = "aroma"
+version = "0.0.0a0"
+description = "A library to prepare asynchronous time series datasets"
+readme = "README.md"
+authors = ["Thibaut Durand <durand.tibo+gh@gmail.com>"]
+homepage = "https://github.com/durandtibo/aroma"
+repository = "https://github.com/durandtibo/aroma"
+keywords = ["dataset", "TPP", "asynchronous time series"]
+license = "BSD-3-Clause"
+
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: BSD License",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+packages = [
+    { include = "aroma", from = "src" },
+]
+
+[tool.poetry.dependencies]
+# Core dependencies
+coola = "^0.0.7"
+python = "^3.9"
+torch = "^2.0"  # make optional
+numpy = "^1.24"  # make optional
+polars = { version = "^0.17", optional = true }
+
+[tool.poetry.extras]
+all = [
+    "polars",
+]
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.3"
+coverage = { extras = ["toml"], version = "^6.5" }
+pre-commit = "^2.21"
+pylint = "^2.17"
+pytest = "^7.3"
+pytest-cov = "^4.0"
+pytest-timeout = "^2.1"
+ruff = "^0.0.262"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.coverage.paths]
+source = ["src", "*/site-packages"]
+
+[tool.coverage.run]
+branch = true
+source = ["aroma"]
+
+[tool.coverage.report]
+show_missing = true
+exclude_lines = [
+    "pragma: no cover",
+    "if TYPE_CHECKING:"
+]
+
+[tool.pytest.ini_options]
+testpaths = "tests/"
+log_format = "%(asctime)s - %(levelname)s - %(name)s - %(message)s"
+log_level = "DEBUG"
+addopts = "--color yes --durations 10 -rf"
+# Configuration of the short test summary info https://docs.pytest.org/en/stable/usage.html#detailed-summary-report
+filterwarnings = [
+    'ignore::DeprecationWarning:tensorboard.*',
+    'ignore::DeprecationWarning:torch.utils.tensorboard.*',
+]
+timeout_func_only = false
+
+[tool.black]
+line-length = 100
+target-version = ["py39", "py310", "py311"]
+include = '\.pyi?$'
+
+[tool.pylint.FORMAT]
+max-line-length = 100
+
+[tool.isort]
+profile = "black"
+
+[tool.docformatter]
+recursive = true
+wrap-summaries = 72
+wrap-descriptions = 72
+syntax = "google"
+
+
+[tool.ruff]
+# Enable pycodestyle (`E`) and Pyflakes (`F`) codes by default.
+#select = ["ANN", "B", "E", "F"]
+#select = ["ANN", "B", "C", "D", "E", "F", "S", "W"]
+select = [
+    "A",   # builtins
+    "ANN", # annotations
+    "B",   # bugbear
+    "BLE", # blind-except
+    "E",   # pycodestyle (Error)
+    "F",   # pyflakes
+    "N",   # naming
+    "PTH", # pathlib
+    "UP",  # pyupgrade
+    "W",   # pycodestyle (Warning)
+#    "NPY", # NumPy-specific rules
+]
+ignore = [
+    "A003",    # Class attribute `{name}` is shadowing a python builtin
+    "ANN002",  # Missing type annotation for `*args`
+    "ANN003",  # Missing type annotation for `**kwargs`
+    "ANN101",  # Missing type annotation for `self` in method
+    "ANN102",  # Missing type annotation for `cls` in classmethod
+    "ANN401",  # Dynamically typed expressions (typing.Any) are disallowed.
+    "B905",    # `zip()` without an explicit strict= parameter set. The `strict=` argument was added in Python 3.10
+    "E501",    # Line lengths are recommended to be no greater than 79 characters.
+    "W505",    # Doc line too long
+]
+
+# Allow autofix for all enabled rules (when `--fix`) is provided.
+fixable = ["A", "ANN", "B", "E", "F", "PTH", "W"]
+unfixable = []
+
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".hg",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pytype",
+    ".ruff_cache",
+    ".tox",
+    ".venv",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "venv",
+]
+
+line-length = 100
+target-version = "py39"
+src = ["src"]
+
+[tool.ruff.mccabe]
+max-complexity = 10
+
+[tool.ruff.pydocstyle]
+convention = "google"
+
+[tool.ruff.pycodestyle]
+max-doc-length = 72
+
+[tool.ruff.isort]
+force-sort-within-sections = true
+combine-as-imports = true
+known-first-party = ["src"]
+
+[tool.ruff.flake8-import-conventions]
+[tool.ruff.flake8-import-conventions.aliases]
+numpy = "np"
