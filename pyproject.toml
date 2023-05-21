@@ -34,7 +34,7 @@ coola = "^0.0,>=0.0.7"
 gravitorch = "^0.0,>=0.0.11"
 numpy = "^1.24"
 python = "^3.9"
-redcat = "^0.0,>=0.0.2"
+redcat = "^0.0,>=0.0.3"
 torch = "^2.0"
 polars = { version = "^0.17", optional = true }
 

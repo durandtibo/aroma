@@ -281,13 +281,13 @@ vision = ["pillow (>=9.5,<10.0)", "torchvision (>=0.15,<0.16)"]
 
 [[package]]
 name = "hya"
-version = "0.0.9"
+version = "0.0.10"
 description = "A library of custom OmegaConf resolvers"
 optional = false
 python-versions = ">=3.9,<4.0"
 files = [
-    {file = "hya-0.0.9-py3-none-any.whl", hash = "sha256:83d339843cb5e3bb18ca9124e4781a508f3685ff4ccd1bfbebeee3618823195c"},
-    {file = "hya-0.0.9.tar.gz", hash = "sha256:c5c9cfadb5a5201e10aee4b14ee3a02e4437e1c4b5225d350790ea60d685c30d"},
+    {file = "hya-0.0.10-py3-none-any.whl", hash = "sha256:d4fa0180d0c5e9d7e817b9f8e787d4bf71538972f713eb89ac0e5f43974b3d16"},
+    {file = "hya-0.0.10.tar.gz", hash = "sha256:8c1e955410f31d8bb49736036f78b68497270fd0bd362e8dbfc1bb796c94614c"},
 ]
 
 [package.dependencies]
@@ -886,13 +886,13 @@ files = [
 
 [[package]]
 name = "redcat"
-version = "0.0.2"
+version = "0.0.3"
 description = "A library to manipulate batches of examples"
 optional = false
 python-versions = ">=3.9,<4.0"
 files = [
-    {file = "redcat-0.0.2-py3-none-any.whl", hash = "sha256:b9180e7e78ddf7e457e7c8f5f3584ec751379e6cfc9ecfe27b8ddaaae39375e1"},
-    {file = "redcat-0.0.2.tar.gz", hash = "sha256:731f85d10f3cbda4f76d172cefe861c0ffec9a0b5eb75b784d8874d4d8d6fda4"},
+    {file = "redcat-0.0.3-py3-none-any.whl", hash = "sha256:c3ac82d7af2c03c15451c8dd765adfe3685f26ac86a651bbf0f74018707d4509"},
+    {file = "redcat-0.0.3.tar.gz", hash = "sha256:509ff6b9a78a327cc8a820dc90545f2eb5ddd1ec19c472c4223088ba8ae9ad21"},
 ]
 
 [package.dependencies]
@@ -1195,4 +1195,4 @@ all = ["polars"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "71cd4bcc46a8dd3a35dd69ef52b0ca958303729d38f83786a20864511dd7dc9a"
+content-hash = "ab395bd9fd1f4a8956080983c9cf3bff2a82a94395e54edb0e8eee55910c02c8"
