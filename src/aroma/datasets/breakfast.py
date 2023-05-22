@@ -53,6 +53,10 @@ from aroma.utils.vocab import Vocabulary
 
 logger = logging.getLogger(__name__)
 
+MISSING_ACTION_INDEX = -1
+MISSING_START_TIME = float("nan")
+MISSING_END_TIME = MISSING_START_TIME
+
 
 @dataclass
 class Annotation:
@@ -174,15 +178,15 @@ def get_event_data(path: Path, remove_duplicate: bool = True) -> tuple[BatchDict
         BatchDict(
             {
                 Annotation.ACTION_INDEX: from_sequences(
-                    batch[Annotation.ACTION_INDEX], padding_value=-1
+                    batch[Annotation.ACTION_INDEX], padding_value=MISSING_ACTION_INDEX
                 ),
                 Annotation.COOKING_ACTIVITY: BatchList(batch[Annotation.COOKING_ACTIVITY]),
                 Annotation.END_TIME: from_sequences(
-                    batch[Annotation.END_TIME], padding_value=float("nan")
+                    batch[Annotation.END_TIME], padding_value=MISSING_END_TIME
                 ),
                 Annotation.PERSON_ID: BatchList(batch[Annotation.PERSON_ID]),
                 Annotation.START_TIME: from_sequences(
-                    batch[Annotation.START_TIME], padding_value=float("nan")
+                    batch[Annotation.START_TIME], padding_value=MISSING_START_TIME
                 ),
             }
         ),
