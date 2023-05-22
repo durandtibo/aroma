@@ -12,6 +12,9 @@ from torch.utils.data import IterDataPipe
 
 from aroma.datasets.breakfast import (
     DATASET_SPLITS,
+    MISSING_ACTION_INDEX,
+    MISSING_END_TIME,
+    MISSING_START_TIME,
     ActionIndexAdderIterDataPipe,
     Annotation,
     DuplicateExampleRemoverIterDataPipe,
@@ -144,14 +147,27 @@ def test_get_event_data_remove_duplicate_examples(tmp_path: Path) -> None:
         BatchDict(
             {
                 Annotation.ACTION_INDEX: BatchedTensorSeq(
-                    torch.tensor([[0, 2, 5, 1, 3, 0], [0, 1, 4, 0, -1, -1]], dtype=torch.long)
+                    torch.tensor(
+                        [
+                            [0, 2, 5, 1, 3, 0],
+                            [0, 1, 4, 0, MISSING_ACTION_INDEX, MISSING_ACTION_INDEX],
+                        ],
+                        dtype=torch.long,
+                    )
                 ),
                 Annotation.COOKING_ACTIVITY: BatchList[str](["cereals", "milk"]),
                 Annotation.END_TIME: BatchedTensorSeq(
                     torch.tensor(
                         [
                             [[30.0], [150.0], [428.0], [575.0], [705.0], [836.0]],
-                            [[47.0], [215.0], [565.0], [747.0], [float("nan")], [float("nan")]],
+                            [
+                                [47.0],
+                                [215.0],
+                                [565.0],
+                                [747.0],
+                                [MISSING_END_TIME],
+                                [MISSING_END_TIME],
+                            ],
                         ],
                         dtype=torch.float,
                     )
@@ -161,7 +177,14 @@ def test_get_event_data_remove_duplicate_examples(tmp_path: Path) -> None:
                     torch.tensor(
                         [
                             [[1.0], [31.0], [151.0], [429.0], [576.0], [706.0]],
-                            [[1.0], [48.0], [216.0], [566.0], [float("nan")], [float("nan")]],
+                            [
+                                [1.0],
+                                [48.0],
+                                [216.0],
+                                [566.0],
+                                [MISSING_START_TIME],
+                                [MISSING_START_TIME],
+                            ],
                         ],
                         dtype=torch.float,
                     )
@@ -194,7 +217,11 @@ def test_get_event_data_keep_duplicate_examples(tmp_path: Path) -> None:
             {
                 Annotation.ACTION_INDEX: BatchedTensorSeq(
                     torch.tensor(
-                        [[0, 2, 4, 1, 3, 0], [0, 2, 4, 1, 3, 0], [0, 1, 5, 0, -1, -1]],
+                        [
+                            [0, 2, 4, 1, 3, 0],
+                            [0, 2, 4, 1, 3, 0],
+                            [0, 1, 5, 0, MISSING_ACTION_INDEX, MISSING_ACTION_INDEX],
+                        ],
                         dtype=torch.long,
                     )
                 ),
@@ -204,7 +231,14 @@ def test_get_event_data_keep_duplicate_examples(tmp_path: Path) -> None:
                         [
                             [[30.0], [150.0], [428.0], [575.0], [705.0], [836.0]],
                             [[30.0], [150.0], [428.0], [575.0], [705.0], [836.0]],
-                            [[47.0], [215.0], [565.0], [747.0], [float("nan")], [float("nan")]],
+                            [
+                                [47.0],
+                                [215.0],
+                                [565.0],
+                                [747.0],
+                                [MISSING_END_TIME],
+                                [MISSING_END_TIME],
+                            ],
                         ],
                         dtype=torch.float,
                     )
@@ -215,7 +249,14 @@ def test_get_event_data_keep_duplicate_examples(tmp_path: Path) -> None:
                         [
                             [[1.0], [31.0], [151.0], [429.0], [576.0], [706.0]],
                             [[1.0], [31.0], [151.0], [429.0], [576.0], [706.0]],
-                            [[1.0], [48.0], [216.0], [566.0], [float("nan")], [float("nan")]],
+                            [
+                                [1.0],
+                                [48.0],
+                                [216.0],
+                                [566.0],
+                                [MISSING_START_TIME],
+                                [MISSING_START_TIME],
+                            ],
                         ],
                         dtype=torch.float,
                     )
