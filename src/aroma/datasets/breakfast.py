@@ -27,9 +27,9 @@ __all__ = [
     "create_action_vocabulary",
     "filter_batch_by_dataset_split",
     "filter_examples_by_dataset_split",
-    "get_action_annotation_from_txt_file",
-    "get_event_data",
-    "get_event_examples",
+    "load_action_annotation",
+    "load_event_data",
+    "load_event_examples",
     "parse_action_annotation_lines",
     "remove_duplicate_examples",
 ]
@@ -121,8 +121,8 @@ DATASET_SPLITS = {
 }
 
 
-def get_event_data(path: Path, remove_duplicate: bool = True) -> tuple[BatchDict, dict]:
-    r"""Gets the event data and metadata for Breakfast.
+def load_event_data(path: Path, remove_duplicate: bool = True) -> tuple[BatchDict, dict]:
+    r"""Loads the event data and metadata for Breakfast.
 
     Args:
         path (``pathlib.Path``): Specifies the directory where the
@@ -138,9 +138,9 @@ def get_event_data(path: Path, remove_duplicate: bool = True) -> tuple[BatchDict
     .. code-block:: python
 
         >>> from pathlib import Path
-        >>> from aroma.datasets.breakfast import get_event_data
+        >>> from aroma.datasets.breakfast import load_event_data
         # Dataset built with coarse annotations and without duplicate sequence events.
-        >>> data, metadata = get_event_data(Path('/path/to/data/breakfast/segmentation_coarse/'))
+        >>> data, metadata = load_event_data(Path('/path/to/data/breakfast/segmentation_coarse/'))
         >>> data.keys()
         dict_keys(['action_index', 'cooking_activity', 'end_time', 'person_id', 'start_time'])
         >>> data.batch_size
@@ -152,14 +152,14 @@ def get_event_data(path: Path, remove_duplicate: bool = True) -> tuple[BatchDict
           token_to_index={'SIL': 0, 'pour_milk': 1, 'cut_fruit': 2, ..., 'stir_tea': 47},
         )}
         # Dataset built with coarse annotations and with duplicate sequence events.
-        >>> data, metadata = get_event_data(
+        >>> data, metadata = load_event_data(
         ...     Path('/path/to/data/breakfast/segmentation_coarse/'),
         ...     remove_duplicate=False,
         ... )
         >>> data.batch_size
         1712
         # Dataset built with coarse annotations and without duplicate sequence events.
-        >>> data, metadata = get_event_data(Path('/path/to/data/breakfast/segmentation_fine/'))
+        >>> data, metadata = load_event_data(Path('/path/to/data/breakfast/segmentation_fine/'))
         >>> data.batch_size
         257
         >>> metadata
@@ -169,7 +169,7 @@ def get_event_data(path: Path, remove_duplicate: bool = True) -> tuple[BatchDict
           token_to_index={'garbage': 0, 'move': 1, 'carry_knife': 2, ..., 'carry_capSalt': 177},
         )}
     """
-    examples = get_event_examples(path=path, remove_duplicate=remove_duplicate)
+    examples = load_event_examples(path=path, remove_duplicate=remove_duplicate)
     action_vocab = create_action_vocabulary(examples)
     batch = convert_to_dict_of_lists(
         tuple(ActionIndexAdderIterDataPipe(SourceWrapper(examples), action_vocab))
@@ -194,8 +194,8 @@ def get_event_data(path: Path, remove_duplicate: bool = True) -> tuple[BatchDict
     )
 
 
-def get_event_examples(path: Path, remove_duplicate: bool = True) -> tuple[dict, ...]:
-    r"""Gets all the event-based examples.
+def load_event_examples(path: Path, remove_duplicate: bool = True) -> tuple[dict, ...]:
+    r"""Loads all the event-based examples.
 
     Args:
         path (``pathlib.Path``): Specifies the path where the
@@ -213,8 +213,8 @@ def get_event_examples(path: Path, remove_duplicate: bool = True) -> tuple[dict,
     .. code-block:: python
 
         >>> from pathlib import Path
-        >>> from aroma.datasets.breakfast import get_event_examples
-        >>> examples = get_event_examples(Path("/path/to/data/breakfast/segmentation_coarse"))
+        >>> from aroma.datasets.breakfast import load_event_examples
+        >>> examples = load_event_examples(Path("/path/to/data/breakfast/segmentation_coarse"))
         >>> len(examples)
         508
         >>> examples[0]
@@ -239,13 +239,13 @@ def get_event_examples(path: Path, remove_duplicate: bool = True) -> tuple[dict,
          'person_id': 'P03',
          'cooking_activity': 'cereals'}
         # To keep duplicate examples
-        >>> examples = get_event_examples(
+        >>> examples = load_event_examples(
         ...     Path("/path/to/data/breakfast/segmentation_coarse"),
         ...     remove_duplicate=False,
         ... )
         >>> len(examples)
         1712
-        >>> examples = get_event_examples(Path("/path/to/data/breakfast/segmentation_fine"))
+        >>> examples = load_event_examples(Path("/path/to/data/breakfast/segmentation_fine"))
         >>> len(examples)
         257
         >>> examples[0]
@@ -371,9 +371,9 @@ def filter_batch_by_dataset_split(
         >>> from pathlib import Path
         >>> from aroma.datasets.breakfast import (
         ...     filter_batch_by_dataset_split,
-        ...     get_event_data,
+        ...     load_event_data,
         ... )
-        >>> data, metadata = get_event_data(Path('/path/to/data/breakfast/segmentation_coarse/'))
+        >>> data, metadata = load_event_data(Path('/path/to/data/breakfast/segmentation_coarse/'))
         >>> filter_batch_by_dataset_split(data, 'train1').batch_size
         386
         >>> filter_batch_by_dataset_split(data, 'test1').batch_size
@@ -413,8 +413,8 @@ def filter_examples_by_dataset_split(
     return filtered_examples
 
 
-def get_action_annotation_from_txt_file(path: Path) -> dict:
-    r"""Gets action annotations from a text file.
+def load_action_annotation(path: Path) -> dict:
+    r"""Loads action annotations from a text file.
 
     Args:
         path (``pathlib.Path``): Specifies the file with the annotations.
@@ -542,7 +542,7 @@ class TxtAnnotationReaderIterDataPipe(IterDataPipe[dict]):
 
     def __iter__(self) -> Iterator[dict]:
         for path in self._datapipe:
-            yield get_action_annotation_from_txt_file(path)
+            yield load_action_annotation(path)
 
     def __len__(self) -> int:
         return len(self._datapipe)

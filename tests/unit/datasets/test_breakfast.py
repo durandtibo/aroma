@@ -10,6 +10,7 @@ from pytest import fixture, mark, raises
 from redcat import BatchDict, BatchedTensor, BatchedTensorSeq, BatchList
 from torch.utils.data import IterDataPipe
 
+from aroma.datasets import load_breakfast_events
 from aroma.datasets.breakfast import (
     DATASET_SPLITS,
     MISSING_ACTION_INDEX,
@@ -22,9 +23,9 @@ from aroma.datasets.breakfast import (
     create_action_vocabulary,
     filter_batch_by_dataset_split,
     filter_examples_by_dataset_split,
-    get_action_annotation_from_txt_file,
-    get_event_data,
-    get_event_examples,
+    load_action_annotation,
+    load_event_data,
+    load_event_examples,
     parse_action_annotation_lines,
     remove_duplicate_examples,
 )
@@ -135,14 +136,14 @@ def test_dataset_splits_separate_test() -> None:
     )
 
 
-####################################
-#     Tests for get_event_data     #
-####################################
+###########################################
+#     Tests for load_breakfast_events     #
+###########################################
 
 
-def test_get_event_data_remove_duplicate_examples(tmp_path: Path) -> None:
+def test_load_breakfast_events(tmp_path: Path) -> None:
     create_text_files(tmp_path)
-    batch, metadata = get_event_data(tmp_path)
+    batch, metadata = load_breakfast_events(tmp_path)
     assert batch.allclose(
         BatchDict(
             {
@@ -209,9 +210,83 @@ def test_get_event_data_remove_duplicate_examples(tmp_path: Path) -> None:
     )
 
 
-def test_get_event_data_keep_duplicate_examples(tmp_path: Path) -> None:
+#####################################
+#     Tests for load_event_data     #
+#####################################
+
+
+def test_load_event_data_remove_duplicate_examples(tmp_path: Path) -> None:
     create_text_files(tmp_path)
-    batch, metadata = get_event_data(tmp_path, remove_duplicate=False)
+    batch, metadata = load_event_data(tmp_path)
+    assert batch.allclose(
+        BatchDict(
+            {
+                Annotation.ACTION_INDEX: BatchedTensorSeq(
+                    torch.tensor(
+                        [
+                            [0, 2, 5, 1, 3, 0],
+                            [0, 1, 4, 0, MISSING_ACTION_INDEX, MISSING_ACTION_INDEX],
+                        ],
+                        dtype=torch.long,
+                    )
+                ),
+                Annotation.COOKING_ACTIVITY: BatchList[str](["cereals", "milk"]),
+                Annotation.END_TIME: BatchedTensorSeq(
+                    torch.tensor(
+                        [
+                            [[30.0], [150.0], [428.0], [575.0], [705.0], [836.0]],
+                            [
+                                [47.0],
+                                [215.0],
+                                [565.0],
+                                [747.0],
+                                [MISSING_END_TIME],
+                                [MISSING_END_TIME],
+                            ],
+                        ],
+                        dtype=torch.float,
+                    )
+                ),
+                Annotation.PERSON_ID: BatchList[str](["P03", "P54"]),
+                Annotation.START_TIME: BatchedTensorSeq(
+                    torch.tensor(
+                        [
+                            [[1.0], [31.0], [151.0], [429.0], [576.0], [706.0]],
+                            [
+                                [1.0],
+                                [48.0],
+                                [216.0],
+                                [566.0],
+                                [MISSING_START_TIME],
+                                [MISSING_START_TIME],
+                            ],
+                        ],
+                        dtype=torch.float,
+                    )
+                ),
+            }
+        ),
+        equal_nan=True,
+    )
+    assert metadata[Annotation.ACTION_VOCAB].equal(
+        Vocabulary(
+            Counter(
+                {
+                    "SIL": 4,
+                    "pour_milk": 2,
+                    "take_bowl": 1,
+                    "stir_cereals": 1,
+                    "spoon_powder": 1,
+                    "pour_cereals": 1,
+                }
+            )
+        )
+    )
+
+
+def test_load_event_data_keep_duplicate_examples(tmp_path: Path) -> None:
+    create_text_files(tmp_path)
+    batch, metadata = load_event_data(tmp_path, remove_duplicate=False)
     assert batch.allclose(
         BatchDict(
             {
@@ -281,15 +356,15 @@ def test_get_event_data_keep_duplicate_examples(tmp_path: Path) -> None:
     )
 
 
-########################################
-#     Tests for get_event_examples     #
-########################################
+#########################################
+#     Tests for load_event_examples     #
+#########################################
 
 
-def test_get_event_examples_remove_duplicate_examples(tmp_path: Path) -> None:
+def test_load_event_examples_remove_duplicate_examples(tmp_path: Path) -> None:
     create_text_files(tmp_path)
     assert objects_are_equal(
-        get_event_examples(tmp_path),
+        load_event_examples(tmp_path),
         (
             {
                 Annotation.ACTION: (
@@ -324,10 +399,10 @@ def test_get_event_examples_remove_duplicate_examples(tmp_path: Path) -> None:
     )
 
 
-def test_get_event_examples_keep_duplicate_examples(tmp_path: Path) -> None:
+def test_load_event_examples_keep_duplicate_examples(tmp_path: Path) -> None:
     create_text_files(tmp_path)
     assert objects_are_equal(
-        get_event_examples(tmp_path, remove_duplicate=False),
+        load_event_examples(tmp_path, remove_duplicate=False),
         (
             {
                 Annotation.ACTION: (
@@ -502,17 +577,17 @@ def test_filter_examples_by_dataset_split_custom_person_id_key(person_id_key: st
     ]
 
 
-#########################################################
-#     Tests for get_action_annotation_from_txt_file     #
-#########################################################
+############################################
+#     Tests for load_action_annotation     #
+############################################
 
 
-def test_get_action_annotation_from_txt_file_incorrect_extension() -> None:
+def test_load_action_annotation_incorrect_extension() -> None:
     with raises(ValueError):
-        get_action_annotation_from_txt_file(Mock(spec=Path))
+        load_action_annotation(Mock(spec=Path))
 
 
-def test_get_action_annotation_from_txt_file(tmp_path: Path) -> None:
+def test_load_action_annotation(tmp_path: Path) -> None:
     path = tmp_path.joinpath("P03_cam01_P03_cereals.txt")
     save_text(
         "1-30 SIL  \n"
@@ -524,7 +599,7 @@ def test_get_action_annotation_from_txt_file(tmp_path: Path) -> None:
         path,
     )
     assert objects_are_equal(
-        get_action_annotation_from_txt_file(path),
+        load_action_annotation(path),
         {
             Annotation.ACTION: (
                 "SIL",
