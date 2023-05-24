@@ -25,6 +25,7 @@ __all__ = [
     "DuplicateExampleRemoverIterDataPipe",
     "TxtAnnotationReaderIterDataPipe",
     "create_action_vocabulary",
+    "download_annotations",
     "filter_batch_by_dataset_split",
     "filter_examples_by_dataset_split",
     "load_action_annotation",
@@ -35,6 +36,7 @@ __all__ = [
 ]
 
 import logging
+import tarfile
 from collections import Counter
 from collections.abc import Iterable, Iterator, Sequence
 from dataclasses import dataclass
@@ -49,6 +51,7 @@ from redcat import BatchDict, BatchList
 from redcat.tensorseq import from_sequences
 from torch.utils.data import IterDataPipe
 
+from aroma.utils.download import download_drive_file
 from aroma.utils.vocab import Vocabulary
 
 logger = logging.getLogger(__name__)
@@ -56,6 +59,11 @@ logger = logging.getLogger(__name__)
 MISSING_ACTION_INDEX = -1
 MISSING_START_TIME = float("nan")
 MISSING_END_TIME = MISSING_START_TIME
+
+URLS = {
+    "segmentation_coarse": "https://drive.google.com/open?id=1R3z_CkO1uIOhu4y2Nh0pCHjQQ2l-Ab9E",
+    "segmentation_fine": "https://drive.google.com/open?id=1Alg_xjefEFOOpO_6_RnelWiNqbJlKhVF",
+}
 
 
 @dataclass
@@ -119,6 +127,38 @@ DATASET_SPLITS = {
     "train3": sorted(PART1 + PART2 + PART4),
     "train4": sorted(PART1 + PART2 + PART3),
 }
+
+
+def download_annotations(path: Path, force_download: bool = False) -> None:
+    r"""Downloads the Breakfast annotations.
+
+    Args:
+        path (``pathlib.Path``): Specifies the path where to store the
+            downloaded data.
+        force_download (bool, optional): If ``True``, the annotations
+            are downloaded everytime this function is called.
+            If ``False``, the annotations are downloaded only if the
+            given path does not contain the annotation data.
+            Default: ``False``
+
+    Example usage:
+
+    .. code-block:: python
+
+        >>> from pathlib import Path
+        >>> from aroma.datasets.breakfast import download_annotations
+        >>> download_annotations(Path('/path/to/data'))
+        >>> list(path.iterdir())
+        [PosixPath('//path/to/data/segmentation_coarse'),
+         PosixPath('/path/to/data/segmentation_fine')]
+    """
+    logger.info("Downloading Breakfast dataset annotations...")
+    for name, url in URLS.items():
+        if not path.joinpath(name).is_dir() or force_download:
+            tar_file = path.joinpath(f"{name}.tar.gz")
+            download_drive_file(url, tar_file, quiet=False, fuzzy=True)
+            tarfile.open(tar_file).extractall(path)
+            tar_file.unlink(missing_ok=True)
 
 
 def load_event_data(path: Path, remove_duplicate: bool = True) -> tuple[BatchDict, dict]:
