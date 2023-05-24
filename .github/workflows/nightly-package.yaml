@@ -30,7 +30,7 @@ jobs:
 
       - name: Run short experiment
         run: |
-          python -c "from aroma.utils import imports; assert imports.is_gdown_available()"
+          python -c "from aroma.utils.imports import is_gdown_available; assert is_gdown_available()"
 
   package-minimal:
     runs-on: ${{ matrix.os }}
@@ -57,4 +57,4 @@ jobs:
 
       - name: Run short experiment
         run: |
-          python -c "from aroma.utils import imports; assert not imports.is_gdown_available()"
+          python -c "from aroma.utils.imports import is_gdown_available; assert is_gdown_available()"
