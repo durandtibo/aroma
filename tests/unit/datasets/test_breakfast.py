@@ -1,6 +1,6 @@
 from collections import Counter
 from pathlib import Path
-from unittest.mock import Mock
+from unittest.mock import Mock, call, patch
 
 import torch
 from coola import objects_are_equal
@@ -16,11 +16,13 @@ from aroma.datasets.breakfast import (
     MISSING_ACTION_INDEX,
     MISSING_END_TIME,
     MISSING_START_TIME,
+    URLS,
     ActionIndexAdderIterDataPipe,
     Annotation,
     DuplicateExampleRemoverIterDataPipe,
     TxtAnnotationReaderIterDataPipe,
     create_action_vocabulary,
+    download_annotations,
     filter_batch_by_dataset_split,
     filter_examples_by_dataset_split,
     load_action_annotation,
@@ -134,6 +136,69 @@ def test_dataset_splits_separate_test() -> None:
         )
         == 52
     )
+
+
+##########################################
+#     Tests for download_annotations     #
+##########################################
+
+
+def test_download_annotations(tmp_path: Path) -> None:
+    with patch("aroma.datasets.breakfast.download_drive_file") as download_mock:
+        with patch("aroma.datasets.breakfast.tarfile.open") as tarfile_mock:
+            download_annotations(tmp_path)
+            assert download_mock.call_args_list == [
+                call(
+                    URLS["segmentation_coarse"],
+                    tmp_path.joinpath("segmentation_coarse.tar.gz"),
+                    quiet=False,
+                    fuzzy=True,
+                ),
+                call(
+                    URLS["segmentation_fine"],
+                    tmp_path.joinpath("segmentation_fine.tar.gz"),
+                    quiet=False,
+                    fuzzy=True,
+                ),
+            ]
+            assert tarfile_mock.call_args_list == [
+                call(tmp_path.joinpath("segmentation_coarse.tar.gz")),
+                call(tmp_path.joinpath("segmentation_fine.tar.gz")),
+            ]
+
+
+def test_download_annotations_dir_exists(tmp_path: Path) -> None:
+    with patch("aroma.datasets.breakfast.Path.is_dir", lambda *args: True):
+        with patch("aroma.datasets.breakfast.download_drive_file") as download_mock:
+            with patch("aroma.datasets.breakfast.tarfile.open") as tarfile_mock:
+                download_annotations(tmp_path)
+                download_mock.assert_not_called()
+                tarfile_mock.assert_not_called()
+
+
+def test_download_annotations_dir_exists_force_download(tmp_path: Path) -> None:
+    with patch("aroma.datasets.breakfast.Path.is_dir", lambda *args: True):
+        with patch("aroma.datasets.breakfast.download_drive_file") as download_mock:
+            with patch("aroma.datasets.breakfast.tarfile.open") as tarfile_mock:
+                download_annotations(tmp_path, force_download=True)
+                assert download_mock.call_args_list == [
+                    call(
+                        URLS["segmentation_coarse"],
+                        tmp_path.joinpath("segmentation_coarse.tar.gz"),
+                        quiet=False,
+                        fuzzy=True,
+                    ),
+                    call(
+                        URLS["segmentation_fine"],
+                        tmp_path.joinpath("segmentation_fine.tar.gz"),
+                        quiet=False,
+                        fuzzy=True,
+                    ),
+                ]
+                assert tarfile_mock.call_args_list == [
+                    call(tmp_path.joinpath("segmentation_coarse.tar.gz")),
+                    call(tmp_path.joinpath("segmentation_fine.tar.gz")),
+                ]
 
 
 ###########################################
