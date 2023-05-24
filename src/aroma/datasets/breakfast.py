@@ -603,6 +603,11 @@ class ActionIndexAdderIterDataPipe(IterDataPipe[dict]):
 #
 #     annotation_path = Path("/Users/thibaut/Downloads/segmentation_coarse")
 #     # annotation_path = Path("/Users/thibaut/Downloads/segmentation_fine")
-#     batch, metadata = get_event_data(annotation_path)
+#     batch, metadata = load_event_data(annotation_path)
 #     print(batch)
 #     print(metadata)
+#
+#     from aroma.preprocessing import add_inter_times_
+#
+#     add_inter_times_(batch, time_key=Annotation.START_TIME, inter_times_key=Annotation.INTER_TIMES)
+#     print(batch)
