@@ -22,6 +22,7 @@ from aroma.datasets.breakfast import (
     TxtAnnotationReaderIterDataPipe,
     create_action_vocabulary,
     download_annotations,
+    fetch_event_data,
     filter_batch_by_dataset_split,
     filter_examples_by_dataset_split,
     load_action_annotation,
@@ -135,6 +136,163 @@ def test_dataset_splits_separate_test() -> None:
         )
         == 52
     )
+
+
+######################################
+#     Tests for fetch_event_data     #
+######################################
+
+
+def test_fetch_event_data_remove_duplicate_examples(tmp_path: Path) -> None:
+    create_text_files(tmp_path.joinpath("segmentation_coarse"))
+    with patch("aroma.datasets.breakfast.download_annotations") as down_mock:
+        batch, metadata = fetch_event_data(tmp_path, name="segmentation_coarse")
+        down_mock.assert_called_once_with(tmp_path, False)
+    assert batch.allclose(
+        BatchDict(
+            {
+                Annotation.ACTION_INDEX: BatchedTensorSeq(
+                    torch.tensor(
+                        [
+                            [0, 2, 5, 1, 3, 0],
+                            [0, 1, 4, 0, MISSING_ACTION_INDEX, MISSING_ACTION_INDEX],
+                        ],
+                        dtype=torch.long,
+                    )
+                ),
+                Annotation.COOKING_ACTIVITY: BatchList[str](["cereals", "milk"]),
+                Annotation.END_TIME: BatchedTensorSeq(
+                    torch.tensor(
+                        [
+                            [[30.0], [150.0], [428.0], [575.0], [705.0], [836.0]],
+                            [
+                                [47.0],
+                                [215.0],
+                                [565.0],
+                                [747.0],
+                                [MISSING_END_TIME],
+                                [MISSING_END_TIME],
+                            ],
+                        ],
+                        dtype=torch.float,
+                    )
+                ),
+                Annotation.PERSON_ID: BatchList[str](["P03", "P54"]),
+                Annotation.START_TIME: BatchedTensorSeq(
+                    torch.tensor(
+                        [
+                            [[1.0], [31.0], [151.0], [429.0], [576.0], [706.0]],
+                            [
+                                [1.0],
+                                [48.0],
+                                [216.0],
+                                [566.0],
+                                [MISSING_START_TIME],
+                                [MISSING_START_TIME],
+                            ],
+                        ],
+                        dtype=torch.float,
+                    )
+                ),
+            }
+        ),
+        equal_nan=True,
+    )
+    assert metadata[Annotation.ACTION_VOCAB].equal(
+        Vocabulary(
+            Counter(
+                {
+                    "SIL": 4,
+                    "pour_milk": 2,
+                    "take_bowl": 1,
+                    "stir_cereals": 1,
+                    "spoon_powder": 1,
+                    "pour_cereals": 1,
+                }
+            )
+        )
+    )
+
+
+def test_fetch_event_data_keep_duplicate_examples(tmp_path: Path) -> None:
+    create_text_files(tmp_path.joinpath("segmentation_coarse"))
+    with patch("aroma.datasets.breakfast.download_annotations") as down_mock:
+        batch, metadata = fetch_event_data(
+            tmp_path, name="segmentation_coarse", remove_duplicate=False, force_download=True
+        )
+        down_mock.assert_called_once_with(tmp_path, True)
+    assert batch.allclose(
+        BatchDict(
+            {
+                Annotation.ACTION_INDEX: BatchedTensorSeq(
+                    torch.tensor(
+                        [
+                            [0, 2, 4, 1, 3, 0],
+                            [0, 2, 4, 1, 3, 0],
+                            [0, 1, 5, 0, MISSING_ACTION_INDEX, MISSING_ACTION_INDEX],
+                        ],
+                        dtype=torch.long,
+                    )
+                ),
+                Annotation.COOKING_ACTIVITY: BatchList[str](["cereals", "cereals", "milk"]),
+                Annotation.END_TIME: BatchedTensorSeq(
+                    torch.tensor(
+                        [
+                            [[30.0], [150.0], [428.0], [575.0], [705.0], [836.0]],
+                            [[30.0], [150.0], [428.0], [575.0], [705.0], [836.0]],
+                            [
+                                [47.0],
+                                [215.0],
+                                [565.0],
+                                [747.0],
+                                [MISSING_END_TIME],
+                                [MISSING_END_TIME],
+                            ],
+                        ],
+                        dtype=torch.float,
+                    )
+                ),
+                Annotation.PERSON_ID: BatchList[str](["P03", "P03", "P54"]),
+                Annotation.START_TIME: BatchedTensorSeq(
+                    torch.tensor(
+                        [
+                            [[1.0], [31.0], [151.0], [429.0], [576.0], [706.0]],
+                            [[1.0], [31.0], [151.0], [429.0], [576.0], [706.0]],
+                            [
+                                [1.0],
+                                [48.0],
+                                [216.0],
+                                [566.0],
+                                [MISSING_START_TIME],
+                                [MISSING_START_TIME],
+                            ],
+                        ],
+                        dtype=torch.float,
+                    )
+                ),
+            }
+        ),
+        equal_nan=True,
+    )
+    assert metadata[Annotation.ACTION_VOCAB].equal(
+        Vocabulary(
+            Counter(
+                {
+                    "SIL": 6,
+                    "pour_milk": 3,
+                    "take_bowl": 2,
+                    "stir_cereals": 2,
+                    "pour_cereals": 2,
+                    "spoon_powder": 1,
+                }
+            )
+        )
+    )
+
+
+def test_fetch_event_data_incorrect_name(tmp_path: Path) -> None:
+    with raises(RuntimeError):
+        fetch_event_data(tmp_path, "incorrect")
 
 
 ##########################################

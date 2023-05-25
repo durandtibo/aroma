@@ -26,6 +26,7 @@ __all__ = [
     "TxtAnnotationReaderIterDataPipe",
     "create_action_vocabulary",
     "download_annotations",
+    "fetch_event_data",
     "filter_batch_by_dataset_split",
     "filter_examples_by_dataset_split",
     "load_action_annotation",
@@ -129,6 +130,57 @@ DATASET_SPLITS = {
 }
 
 
+def fetch_event_data(
+    path: Path, name: str, remove_duplicate: bool = True, force_download: bool = False
+) -> tuple[BatchDict, dict]:
+    r"""Downloads and loads the event data and metadata for Breakfast.
+
+    Args:
+        path (``pathlib.Path``): Specifies the path where to store the
+            downloaded data.
+        name (str): Specifies the name of the dataset. The valid names
+            are 'segmentation_coarse' and 'segmentation_fine'.
+        remove_duplicate (bool, optional): If ``True``, the duplicate
+            examples are removed. Default: ``True``
+        force_download (bool, optional): If ``True``, the annotations
+            are downloaded everytime this function is called.
+            If ``False``, the annotations are downloaded only if the
+            given path does not contain the annotation data.
+            Default: ``False``
+
+    Returns:
+        tuple: A tuple with the data and metadata.
+
+    Raises:
+        RuntimeError if the name is incorrect
+
+    Example usage:
+
+    .. code-block:: python
+
+        >>> from pathlib import Path
+        >>> from aroma.datasets.breakfast import fetch_event_data
+        >>> data, metadata = fetch_event_data(
+        ...     Path('/path/to/data/breakfast/'), 'segmentation_coarse'
+        ... )
+        >>> data.keys()
+        dict_keys(['action_index', 'cooking_activity', 'end_time', 'person_id', 'start_time'])
+        >>> data.batch_size
+        508
+        >>> metadata
+        {'action_vocab': Vocabulary(
+          counter=Counter({'SIL': 1016, 'pour_milk': 199, 'cut_fruit': 176, ..., 'stir_tea': 2}),
+          index_to_token=('SIL', 'pour_milk', 'cut_fruit',..., 'stir_tea'),
+          token_to_index={'SIL': 0, 'pour_milk': 1, 'cut_fruit': 2, ..., 'stir_tea': 47},
+        )}
+    """
+    valid_names = set(URLS.keys())
+    if name not in valid_names:
+        raise RuntimeError(f"Incorrect name: {name}. Valid names are: {valid_names}")
+    download_annotations(path, force_download)
+    return load_event_data(path.joinpath(name), remove_duplicate)
+
+
 def download_annotations(path: Path, force_download: bool = False) -> None:
     r"""Downloads the Breakfast annotations.
 
@@ -168,7 +220,7 @@ def load_event_data(path: Path, remove_duplicate: bool = True) -> tuple[BatchDic
         path (``pathlib.Path``): Specifies the directory where the
             dataset annotations are stored.
         remove_duplicate (bool, optional): If ``True``, the duplicate
-            examples are removed.
+            examples are removed. Default: ``True``
 
     Returns:
         tuple: A tuple with the data and metadata.
