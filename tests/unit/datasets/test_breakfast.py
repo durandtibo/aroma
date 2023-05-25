@@ -10,7 +10,6 @@ from pytest import fixture, mark, raises
 from redcat import BatchDict, BatchedTensor, BatchedTensorSeq, BatchList
 from torch.utils.data import IterDataPipe
 
-from aroma.datasets import load_breakfast_events
 from aroma.datasets.breakfast import (
     DATASET_SPLITS,
     MISSING_ACTION_INDEX,
@@ -199,80 +198,6 @@ def test_download_annotations_dir_exists_force_download(tmp_path: Path) -> None:
                     call(tmp_path.joinpath("segmentation_coarse.tar.gz")),
                     call(tmp_path.joinpath("segmentation_fine.tar.gz")),
                 ]
-
-
-###########################################
-#     Tests for load_breakfast_events     #
-###########################################
-
-
-def test_load_breakfast_events(tmp_path: Path) -> None:
-    create_text_files(tmp_path)
-    batch, metadata = load_breakfast_events(tmp_path)
-    assert batch.allclose(
-        BatchDict(
-            {
-                Annotation.ACTION_INDEX: BatchedTensorSeq(
-                    torch.tensor(
-                        [
-                            [0, 2, 5, 1, 3, 0],
-                            [0, 1, 4, 0, MISSING_ACTION_INDEX, MISSING_ACTION_INDEX],
-                        ],
-                        dtype=torch.long,
-                    )
-                ),
-                Annotation.COOKING_ACTIVITY: BatchList[str](["cereals", "milk"]),
-                Annotation.END_TIME: BatchedTensorSeq(
-                    torch.tensor(
-                        [
-                            [[30.0], [150.0], [428.0], [575.0], [705.0], [836.0]],
-                            [
-                                [47.0],
-                                [215.0],
-                                [565.0],
-                                [747.0],
-                                [MISSING_END_TIME],
-                                [MISSING_END_TIME],
-                            ],
-                        ],
-                        dtype=torch.float,
-                    )
-                ),
-                Annotation.PERSON_ID: BatchList[str](["P03", "P54"]),
-                Annotation.START_TIME: BatchedTensorSeq(
-                    torch.tensor(
-                        [
-                            [[1.0], [31.0], [151.0], [429.0], [576.0], [706.0]],
-                            [
-                                [1.0],
-                                [48.0],
-                                [216.0],
-                                [566.0],
-                                [MISSING_START_TIME],
-                                [MISSING_START_TIME],
-                            ],
-                        ],
-                        dtype=torch.float,
-                    )
-                ),
-            }
-        ),
-        equal_nan=True,
-    )
-    assert metadata[Annotation.ACTION_VOCAB].equal(
-        Vocabulary(
-            Counter(
-                {
-                    "SIL": 4,
-                    "pour_milk": 2,
-                    "take_bowl": 1,
-                    "stir_cereals": 1,
-                    "spoon_powder": 1,
-                    "pour_cereals": 1,
-                }
-            )
-        )
-    )
 
 
 #####################################
