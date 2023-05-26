@@ -1,4 +1,4 @@
-# aroma
+# Home
 
 <p align="center">
     <a href="https://github.com/durandtibo/aroma/actions">
@@ -44,7 +44,9 @@
 
 ## Overview
 
-A python library to prepare asynchronous time series datasets
+A python library to prepare asynchronous time series datasets.
+
+## Motivation
 
 ## Disclaimer on Datasets
 
