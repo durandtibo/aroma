@@ -1,0 +1,9 @@
+cff-version: 1.2.0
+message: "If you use this library, please cite it as below."
+authors:
+- family-names: "Durand"
+  given-names: "Thibaut"
+
+title: "AROMA: A Python Library to Prepare Asynchronous Time Series Datasets"
+date-released: 2023-05-20
+url: "https://github.com/durandtibo/aroma"
