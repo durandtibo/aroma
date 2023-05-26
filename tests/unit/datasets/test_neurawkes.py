@@ -9,8 +9,8 @@ from redcat import BatchDict, BatchedTensorSeq
 
 from aroma.datasets.neurawkes import (
     Annotation,
-    get_event_data,
-    get_event_examples,
+    load_event_data,
+    load_event_examples,
     load_pickle2,
     prepare_example,
 )
@@ -21,7 +21,7 @@ from aroma.datasets.neurawkes import (
 
 
 @mark.parametrize("split", ("train", "test"))
-def test_get_event_data(tmp_path: Path, split: str) -> None:
+def test_load_event_data(tmp_path: Path, split: str) -> None:
     load_mock = Mock(
         return_value={
             split: [
@@ -39,7 +39,7 @@ def test_get_event_data(tmp_path: Path, split: str) -> None:
     )
     with patch("aroma.datasets.neurawkes.load_pickle2", load_mock):
         assert objects_are_allclose(
-            get_event_data(tmp_path, split),
+            load_event_data(tmp_path, split),
             (
                 BatchDict(
                     {
@@ -67,7 +67,7 @@ def test_get_event_data(tmp_path: Path, split: str) -> None:
 
 
 @mark.parametrize("split", ("train", "test"))
-def test_get_event_examples(tmp_path: Path, split: str) -> None:
+def test_load_event_examples(tmp_path: Path, split: str) -> None:
     load_mock = Mock(
         return_value={
             split: [
@@ -85,7 +85,7 @@ def test_get_event_examples(tmp_path: Path, split: str) -> None:
     )
     with patch("aroma.datasets.neurawkes.load_pickle2", load_mock):
         assert objects_are_equal(
-            get_event_examples(tmp_path, split),
+            load_event_examples(tmp_path, split),
             tuple(
                 [
                     {
@@ -104,9 +104,9 @@ def test_get_event_examples(tmp_path: Path, split: str) -> None:
         load_mock.assert_called_once_with(tmp_path.joinpath(f"{split}.pkl"))
 
 
-def test_get_event_examples_incorrect_split(tmp_path: Path) -> None:
+def test_load_event_examples_incorrect_split(tmp_path: Path) -> None:
     with raises(RuntimeError, match="Incorrect split 'incorrect'."):
-        get_event_examples(tmp_path, "incorrect")
+        load_event_examples(tmp_path, "incorrect")
 
 
 #####################################

@@ -1,5 +1,6 @@
-__all__ = ["Annotation", "get_event_data", "get_event_examples"]
+__all__ = ["Annotation", "load_event_data", "load_event_examples"]
 
+import logging
 import pickle
 from collections.abc import Mapping
 from dataclasses import dataclass
@@ -8,11 +9,15 @@ from typing import Any
 
 from gravitorch.datapipes.iter import DictOfListConverter, SourceWrapper
 from gravitorch.utils.mapping import convert_to_dict_of_lists
+from gravitorch.utils.path import sanitize_path
 from redcat import BatchDict
 from redcat.tensorseq import from_sequences
 from torch.utils.data.datapipes.iter import Mapper
 
 from aroma.datapipes.iter import MapOfTensorConverter
+
+logger = logging.getLogger(__name__)
+
 
 MISSING_EVENT_TYPE = -1
 MISSING_START_TIME = float("nan")
@@ -25,8 +30,8 @@ class Annotation:
     START_TIME: str = "start_time"  # Time since start
 
 
-def get_event_data(path: Path, split: str) -> tuple[BatchDict, dict]:
-    r"""Gets the neurawkes event sequences data and metadata.
+def load_event_data(path: Path, split: str) -> tuple[BatchDict, dict]:
+    r"""Loads the neurawkes event sequences data and metadata.
 
     Please follow the instructions from
     https://github.com/hongyuanmei/neurawkes/tree/master/data
@@ -45,11 +50,13 @@ def get_event_data(path: Path, split: str) -> tuple[BatchDict, dict]:
     .. code-block:: python
 
         >>> from pathlib import Path
-        >>> from aroma.datasets.neurawkes import get_event_data
-        >>> data, metadata = get_event_data(Path('/path/to/data/neurawkes/data_retweet'), 'train')
-        >>> data, metadata = get_event_data(Path('/path/to/data/neurawkes/data_so/fold1'), 'train')
+        >>> from aroma.datasets.neurawkes import load_event_data
+        >>> data, metadata = load_event_data(Path('/path/to/data/neurawkes/data_retweet'), 'train')
+        >>> data, metadata = load_event_data(Path('/path/to/data/neurawkes/data_so/fold1'), 'train')
     """
-    batch = convert_to_dict_of_lists(get_event_examples(path, split))
+    examples = load_event_examples(path, split)
+    logger.info(f"Creating a batch of {len(examples):,} examples...")
+    batch = convert_to_dict_of_lists(examples)
     return (
         BatchDict(
             {
@@ -65,8 +72,8 @@ def get_event_data(path: Path, split: str) -> tuple[BatchDict, dict]:
     )
 
 
-def get_event_examples(path: Path, split: str) -> tuple[dict, ...]:
-    r"""Gets the neurawkes event-based examples for a given dataset
+def load_event_examples(path: Path, split: str) -> tuple[dict, ...]:
+    r"""Loads the neurawkes event-based examples for a given dataset
     split.
 
     Args:
@@ -82,8 +89,8 @@ def get_event_examples(path: Path, split: str) -> tuple[dict, ...]:
     .. code-block:: python
 
         >>> from pathlib import Path
-        >>> from aroma.datasets.neurawkes import get_event_examples
-        >>> examples = get_event_examples(Path('/path/to/data/neurawkes/data_retweet'), 'train')
+        >>> from aroma.datasets.neurawkes import load_event_examples
+        >>> examples = load_event_examples(Path('/path/to/data/neurawkes/data_retweet'), 'train')
         >>> len(examples)
         20000
         >>> examples[0]
@@ -110,7 +117,11 @@ def get_event_examples(path: Path, split: str) -> tuple[dict, ...]:
     valid_splits = {"train", "dev", "test", "test1"}
     if split not in valid_splits:
         raise RuntimeError(f"Incorrect split '{split}'. The valid splits are {valid_splits}.")
-    data = load_pickle2(path.joinpath(f"{split}.pkl"))
+    path = sanitize_path(path)
+    path = path.joinpath(f"{split}.pkl")
+    logger.info(f"Loading data from {path}...")
+    data = load_pickle2(path)
+    logger.info("Preparing examples...")
     dp = SourceWrapper(data[split])
     dp = DictOfListConverter(dp)
     dp = MapOfTensorConverter(dp)
@@ -132,7 +143,6 @@ def prepare_example(example: Mapping) -> dict:
     """
     return {
         Annotation.EVENT_TYPE_INDEX: example["type_event"],
-        # Annotation.INTER_TIMES: example["time_since_last_event"],
         Annotation.START_TIME: example["time_since_start"],
     }
 
@@ -152,3 +162,16 @@ def load_pickle2(path: Path) -> Any:
     """
     with Path.open(path, "rb") as f:
         return pickle.load(f, encoding="latin1")
+
+
+# if __name__ == "__main__":
+#     logging.basicConfig(level=logging.DEBUG)
+#     path = Path("~/Downloads/NeuralHawkesData/data_retweet")
+#     batch, metadata = load_event_data(path, "train")
+#     print(batch)
+#     print(metadata)
+#
+#     from aroma.preprocessing import add_inter_times_
+#
+#     add_inter_times_(batch, time_key=Annotation.START_TIME, inter_times_key=Annotation.INTER_TIMES)
+#     print(batch)
