@@ -21,13 +21,13 @@ def download_drive_file(url: str, path: Path, *args, **kwargs) -> None:
 
     Example usage:
 
-    .. code-block:: python
+    .. code-block:: pycon
 
         >>> from pathlib import Path
         >>> from aroma.utils.download import download_drive_file
         >>> download_drive_file(
         ...     "https://drive.google.com/open?id=1R3z_CkO1uIOhu4y2Nh0pCHjQQ2l-Ab9E",
-        ...     Path('/path/to/data.tar.gz'),
+        ...     Path("/path/to/data.tar.gz"),
         ...     quiet=False,
         ...     fuzzy=True,
         ... )

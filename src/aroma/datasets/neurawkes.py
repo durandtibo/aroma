@@ -47,12 +47,12 @@ def load_event_data(path: Path, split: str) -> tuple[BatchDict, dict]:
 
     Example usage:
 
-    .. code-block:: python
+    .. code-block:: pycon
 
         >>> from pathlib import Path
         >>> from aroma.datasets.neurawkes import load_event_data
-        >>> data, metadata = load_event_data(Path('/path/to/data/neurawkes/data_retweet'), 'train')
-        >>> data, metadata = load_event_data(Path('/path/to/data/neurawkes/data_so/fold1'), 'train')
+        >>> data, metadata = load_event_data(Path("/path/to/data/neurawkes/data_retweet"), "train")
+        >>> data, metadata = load_event_data(Path("/path/to/data/neurawkes/data_so/fold1"), "train")
     """
     examples = load_event_examples(path, split)
     logger.info(f"Creating a batch of {len(examples):,} examples...")
@@ -86,11 +86,11 @@ def load_event_examples(path: Path, split: str) -> tuple[dict, ...]:
 
     Example usage:
 
-    .. code-block:: python
+    .. code-block:: pycon
 
         >>> from pathlib import Path
         >>> from aroma.datasets.neurawkes import load_event_examples
-        >>> examples = load_event_examples(Path('/path/to/data/neurawkes/data_retweet'), 'train')
+        >>> examples = load_event_examples(Path("/path/to/data/neurawkes/data_retweet"), "train")
         >>> len(examples)
         20000
         >>> examples[0]

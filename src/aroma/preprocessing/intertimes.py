@@ -23,7 +23,7 @@ def add_inter_times_(
 
     Example usage:
 
-    .. code-block:: python
+    .. code-block:: pycon
 
         >>> import torch
         >>> from redcat import BatchDict, BatchedTensorSeq

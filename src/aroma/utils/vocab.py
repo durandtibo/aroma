@@ -76,16 +76,16 @@ class Vocabulary(Generic[T]):
 
         Example usage:
 
-        .. code-block:: python
+        .. code-block:: pycon
 
             >>> from collections import Counter
             >>> from aroma.utils.vocab import Vocabulary
             >>> vocab = Vocabulary(Counter({"b": 3, "a": 1, "c": 2}))
-            >>> vocab.get_index('a')
+            >>> vocab.get_index("a")
             1
-            >>> vocab.get_index('b')
+            >>> vocab.get_index("b")
             0
-            >>> vocab.get_index('c')
+            >>> vocab.get_index("c")
             2
         """
         return self._token_to_index[token]
@@ -98,7 +98,7 @@ class Vocabulary(Generic[T]):
 
         Example usage:
 
-        .. code-block:: python
+        .. code-block:: pycon
 
             >>> from collections import Counter
             >>> from aroma.utils.vocab import Vocabulary
@@ -119,7 +119,7 @@ class Vocabulary(Generic[T]):
 
         Example usage:
 
-        .. code-block:: python
+        .. code-block:: pycon
 
             >>> from collections import Counter
             >>> from aroma.utils.vocab import Vocabulary
@@ -141,7 +141,7 @@ class Vocabulary(Generic[T]):
 
         Example usage:
 
-        .. code-block:: python
+        .. code-block:: pycon
 
             >>> from collections import Counter
             >>> from aroma.utils.vocab import Vocabulary
@@ -159,7 +159,7 @@ class Vocabulary(Generic[T]):
 
         Example usage:
 
-        .. code-block:: python
+        .. code-block:: pycon
 
             >>> from collections import Counter
             >>> from aroma.utils.vocab import Vocabulary
@@ -177,7 +177,7 @@ class Vocabulary(Generic[T]):
 
         Example usage:
 
-        .. code-block:: python
+        .. code-block:: pycon
 
             >>> from collections import Counter
             >>> from aroma.utils.vocab import Vocabulary
@@ -210,7 +210,7 @@ class Vocabulary(Generic[T]):
 
         Example usage:
 
-        .. code-block:: python
+        .. code-block:: pycon
 
             >>> from collections import Counter
             >>> from aroma.utils.vocab import Vocabulary
@@ -238,7 +238,7 @@ class Vocabulary(Generic[T]):
 
         Example usage:
 
-        .. code-block:: python
+        .. code-block:: pycon
 
             >>> from collections import Counter
             >>> from aroma.utils.vocab import Vocabulary
@@ -265,7 +265,7 @@ class Vocabulary(Generic[T]):
 
         Example usage:
 
-        .. code-block:: python
+        .. code-block:: pycon
 
             >>> from collections import Counter
             >>> from aroma.utils.vocab import Vocabulary
@@ -297,7 +297,7 @@ class Vocabulary(Generic[T]):
 
         Example usage:
 
-        .. code-block:: python
+        .. code-block:: pycon
 
             >>> from collections import Counter
             >>> from aroma.utils.vocab import Vocabulary
@@ -334,7 +334,7 @@ class Vocabulary(Generic[T]):
 
         Example usage:
 
-        .. code-block:: python
+        .. code-block:: pycon
 
             >>> from collections import Counter
             >>> from aroma.utils.vocab import Vocabulary
@@ -361,7 +361,7 @@ class Vocabulary(Generic[T]):
 
         Example usage:
 
-        .. code-block:: python
+        .. code-block:: pycon
 
             >>> from collections import Counter
             >>> from aroma.utils.vocab import Vocabulary

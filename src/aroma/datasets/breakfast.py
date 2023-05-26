@@ -156,12 +156,12 @@ def fetch_event_data(
 
     Example usage:
 
-    .. code-block:: python
+    .. code-block:: pycon
 
         >>> from pathlib import Path
         >>> from aroma.datasets.breakfast import fetch_event_data
         >>> data, metadata = fetch_event_data(
-        ...     Path('/path/to/data/breakfast/'), 'segmentation_coarse'
+        ...     Path("/path/to/data/breakfast/"), "segmentation_coarse"
         ... )
         >>> data.keys()
         dict_keys(['action_index', 'cooking_activity', 'end_time', 'person_id', 'start_time'])
@@ -195,11 +195,11 @@ def download_annotations(path: Path, force_download: bool = False) -> None:
 
     Example usage:
 
-    .. code-block:: python
+    .. code-block:: pycon
 
         >>> from pathlib import Path
         >>> from aroma.datasets.breakfast import download_annotations
-        >>> download_annotations(Path('/path/to/data'))
+        >>> download_annotations(Path("/path/to/data"))
         >>> list(path.iterdir())
         [PosixPath('//path/to/data/segmentation_coarse'),
          PosixPath('/path/to/data/segmentation_fine')]
@@ -227,12 +227,12 @@ def load_event_data(path: Path, remove_duplicate: bool = True) -> tuple[BatchDic
 
     Example usage:
 
-    .. code-block:: python
+    .. code-block:: pycon
 
         >>> from pathlib import Path
         >>> from aroma.datasets.breakfast import load_event_data
         # Dataset built with coarse annotations and without duplicate sequence events.
-        >>> data, metadata = load_event_data(Path('/path/to/data/breakfast/segmentation_coarse/'))
+        >>> data, metadata = load_event_data(Path("/path/to/data/breakfast/segmentation_coarse/"))
         >>> data.keys()
         dict_keys(['action_index', 'cooking_activity', 'end_time', 'person_id', 'start_time'])
         >>> data.batch_size
@@ -245,13 +245,13 @@ def load_event_data(path: Path, remove_duplicate: bool = True) -> tuple[BatchDic
         )}
         # Dataset built with coarse annotations and with duplicate sequence events.
         >>> data, metadata = load_event_data(
-        ...     Path('/path/to/data/breakfast/segmentation_coarse/'),
+        ...     Path("/path/to/data/breakfast/segmentation_coarse/"),
         ...     remove_duplicate=False,
         ... )
         >>> data.batch_size
         1712
         # Dataset built with coarse annotations and without duplicate sequence events.
-        >>> data, metadata = load_event_data(Path('/path/to/data/breakfast/segmentation_fine/'))
+        >>> data, metadata = load_event_data(Path("/path/to/data/breakfast/segmentation_fine/"))
         >>> data.batch_size
         257
         >>> metadata
@@ -302,7 +302,7 @@ def load_event_examples(path: Path, remove_duplicate: bool = True) -> tuple[dict
 
     Example usage:
 
-    .. code-block:: python
+    .. code-block:: pycon
 
         >>> from pathlib import Path
         >>> from aroma.datasets.breakfast import load_event_examples
@@ -458,17 +458,17 @@ def filter_batch_by_dataset_split(
 
     Example usage:
 
-    .. code-block:: python
+    .. code-block:: pycon
 
         >>> from pathlib import Path
         >>> from aroma.datasets.breakfast import (
         ...     filter_batch_by_dataset_split,
         ...     load_event_data,
         ... )
-        >>> data, metadata = load_event_data(Path('/path/to/data/breakfast/segmentation_coarse/'))
-        >>> filter_batch_by_dataset_split(data, 'train1').batch_size
+        >>> data, metadata = load_event_data(Path("/path/to/data/breakfast/segmentation_coarse/"))
+        >>> filter_batch_by_dataset_split(data, "train1").batch_size
         386
-        >>> filter_batch_by_dataset_split(data, 'test1').batch_size
+        >>> filter_batch_by_dataset_split(data, "test1").batch_size
         122
     """
     indices = []
