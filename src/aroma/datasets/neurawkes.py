@@ -164,14 +164,14 @@ def load_pickle2(path: Path) -> Any:
         return pickle.load(f, encoding="latin1")
 
 
-if __name__ == "__main__":
-    logging.basicConfig(level=logging.DEBUG)
-    path = Path("~/Downloads/NeuralHawkesData/data_retweet")
-    batch, metadata = load_event_data(path, "train")
-    print(batch)
-    print(metadata)
-
-    from aroma.preprocessing import add_inter_times_
-
-    add_inter_times_(batch, time_key=Annotation.START_TIME, inter_times_key=Annotation.INTER_TIMES)
-    print(batch)
+# if __name__ == "__main__":
+#     logging.basicConfig(level=logging.DEBUG)
+#     path = Path("~/Downloads/NeuralHawkesData/data_retweet")
+#     batch, metadata = load_event_data(path, "train")
+#     print(batch)
+#     print(metadata)
+#
+#     from aroma.preprocessing import add_inter_times_
+#
+#     add_inter_times_(batch, time_key=Annotation.START_TIME, inter_times_key=Annotation.INTER_TIMES)
+#     print(batch)
