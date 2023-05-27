@@ -175,8 +175,8 @@ def fetch_event_data(
           token_to_index={'SIL': 0, 'pour_milk': 1, 'cut_fruit': 2, ..., 'stir_tea': 47},
         )}
     """
-    valid_names = set(URLS.keys())
-    if name not in valid_names:
+
+    if name not in (valid_names := set(URLS.keys())):
         raise RuntimeError(f"Incorrect name: {name}. Valid names are: {valid_names}")
     path = sanitize_path(path)
     download_annotations(path, force_download)
@@ -207,7 +207,7 @@ def download_annotations(path: Path, force_download: bool = False) -> None:
          PosixPath('/path/to/data/segmentation_fine')]
     """
     path = sanitize_path(path)
-    logger.info("Downloading Breakfast dataset annotations...")
+    logger.info(f"Downloading Breakfast dataset annotations in {path}...")
     for name, url in URLS.items():
         if not path.joinpath(name).is_dir() or force_download:
             tar_file = path.joinpath(f"{name}.tar.gz")
@@ -696,16 +696,16 @@ class ActionIndexAdderIterDataPipe(IterDataPipe[dict]):
         )
 
 
-# if __name__ == "__main__":
-#     logging.basicConfig(level=logging.DEBUG)
-#
-#     annotation_path = Path("~/Downloads/segmentation_coarse")
-#     # annotation_path = Path("~/Downloads/segmentation_fine")
-#     batch, metadata = load_event_data(annotation_path)
-#     print(batch)
-#     print(metadata)
-#
-#     from aroma.preprocessing import add_inter_times_
-#
-#     add_inter_times_(batch, time_key=Annotation.START_TIME, inter_times_key=Annotation.INTER_TIMES)
-#     print(batch)
+if __name__ == "__main__":
+    logging.basicConfig(level=logging.DEBUG)
+
+    annotation_path = Path("~/Downloads/breakfast/segmentation_coarse")
+    # annotation_path = Path("~/Downloads/breakfast/segmentation_fine")
+    batch, metadata = load_event_data(annotation_path)
+    print(batch)
+    print(metadata)
+
+    from aroma.preprocessing import add_inter_times_
+
+    add_inter_times_(batch, time_key=Annotation.START_TIME, inter_times_key=Annotation.INTER_TIMES)
+    print(batch)

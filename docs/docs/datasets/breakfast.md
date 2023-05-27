@@ -59,6 +59,7 @@ from pathlib import Path
 from aroma.datasets.breakfast import load_event_data
 
 data, metadata = load_event_data(Path("/path/to/data/breakfast/segmentation_coarse"))
+print(data.summary())
 print(data)
 print(metadata)
 ```
@@ -66,6 +67,14 @@ print(metadata)
 The output should look like:
 
 ```textmate
+BatchDict(
+  (action_index) BatchedTensorSeq(dtype=torch.int64, shape=torch.Size([508, 25]), device=cpu, batch_dim=0, seq_dim=1)
+  (cooking_activity) BatchList(batch_size=508)
+  (end_time) BatchedTensorSeq(dtype=torch.float32, shape=torch.Size([508, 25, 1]), device=cpu, batch_dim=0, seq_dim=1)
+  (person_id) BatchList(batch_size=508)
+  (start_time) BatchedTensorSeq(dtype=torch.float32, shape=torch.Size([508, 25, 1]), device=cpu, batch_dim=0, seq_dim=1)
+)
+
 BatchDict(
   (action_index) tensor([[ 0, 16, 21,  ..., -1, -1, -1],
             [ 0, 21,  1,  ..., -1, -1, -1],
@@ -175,6 +184,7 @@ BatchDict(
              [ nan],
              [ nan]]], batch_dim=0, seq_dim=1)
 )
+
 {'action_vocab': Vocabulary(
   counter=Counter({'SIL': 1016, 'pour_milk': 199, 'cut_fruit': 176, ..., 'stir_tea': 2}),
   index_to_token=('SIL', 'pour_milk', 'cut_fruit', 'crack_egg', ..., 'stir_tea'),
@@ -189,7 +199,9 @@ they are missing:
 from pathlib import Path
 from aroma.datasets.breakfast import fetch_event_data
 
-data, metadata = fetch_event_data(Path("/path/to/data/breakfast/"), name="segmentation_coarse")
+data, metadata = fetch_event_data(
+    Path("/path/to/data/breakfast/"), name="segmentation_coarse"
+)
 ```
 
 By default, the duplicate event sequences are removed.
@@ -200,7 +212,10 @@ You can set `remove_duplicate=False` to keep the duplicate event sequences.
 from pathlib import Path
 from aroma.datasets.breakfast import load_event_data
 
-data, metadata = load_event_data(Path("/path/to/data/breakfast/segmentation_coarse/"), remove_duplicate=False)
+data, metadata = load_event_data(
+    Path("/path/to/data/breakfast/segmentation_coarse/"), remove_duplicate=False
+)
+print(data.summary())
 print(data)
 print(metadata)
 ```
@@ -208,6 +223,14 @@ print(metadata)
 The output should look like:
 
 ```textmate
+BatchDict(
+  (action_index) BatchedTensorSeq(dtype=torch.int64, shape=torch.Size([1712, 25]), device=cpu, batch_dim=0, seq_dim=1)
+  (cooking_activity) BatchList(batch_size=1712)
+  (end_time) BatchedTensorSeq(dtype=torch.float32, shape=torch.Size([1712, 25, 1]), device=cpu, batch_dim=0, seq_dim=1)
+  (person_id) BatchList(batch_size=1712)
+  (start_time) BatchedTensorSeq(dtype=torch.float32, shape=torch.Size([1712, 25, 1]), device=cpu, batch_dim=0, seq_dim=1)
+)
+
 BatchDict(
   (action_index) tensor([[ 0, 16, 18,  ..., -1, -1, -1],
             [ 0, 16, 18,  ..., -1, -1, -1],
@@ -317,6 +340,7 @@ BatchDict(
              [ nan],
              [ nan]]], batch_dim=0, seq_dim=1)
 )
+
 {'action_vocab': Vocabulary(
   counter=Counter({'SIL': 1016, 'pour_milk': 199, 'cut_fruit': 176, ..., 'stir_tea': 2}),
   index_to_token=('SIL', 'pour_milk', 'cut_fruit', 'crack_egg', ..., 'stir_tea'),
@@ -338,6 +362,14 @@ print(metadata)
 The output should look like:
 
 ```textmate
+BatchDict(
+  (action_index) BatchedTensorSeq(dtype=torch.int64, shape=torch.Size([257, 165]), device=cpu, batch_dim=0, seq_dim=1)
+  (cooking_activity) BatchList(batch_size=257)
+  (end_time) BatchedTensorSeq(dtype=torch.float32, shape=torch.Size([257, 165, 1]), device=cpu, batch_dim=0, seq_dim=1)
+  (person_id) BatchList(batch_size=257)
+  (start_time) BatchedTensorSeq(dtype=torch.float32, shape=torch.Size([257, 165, 1]), device=cpu, batch_dim=0, seq_dim=1)
+)
+
 BatchDict(
   (action_index) tensor([[  0,  44,  49,  ...,  -1,  -1,  -1],
             [  0,  83,  91,  ...,  -1,  -1,  -1],
@@ -447,6 +479,7 @@ BatchDict(
              [nan],
              [nan]]], batch_dim=0, seq_dim=1)
 )
+
 {'action_vocab': Vocabulary(
   counter=Counter({'garbage': 774, 'move': 649, 'carry_knife': 403, ..., 'carry_capSalt': 3}),
   index_to_token=('garbage', 'move', 'carry_knife', ..., 'carry_capSalt'),
@@ -467,120 +500,18 @@ from aroma.datasets.breakfast import filter_batch_by_dataset_split, load_event_d
 
 data, metadata = load_event_data(Path("/path/to/data/breakfast/segmentation_coarse/"))
 data_train = filter_batch_by_dataset_split(data, "train1")
-print(data_train)
+print(data_train.summary())
 ```
 
 The output should look like:
 
 ```textmate
 BatchDict(
-  (action_index) tensor([[ 0, 21,  1,  ..., -1, -1, -1],
-            [ 0, 21,  1,  ..., -1, -1, -1],
-            [ 0, 21,  1,  ..., -1, -1, -1],
-            ...,
-            [ 0, 25, 23,  ..., -1, -1, -1],
-            [ 0, 13, 23,  ..., -1, -1, -1],
-            [ 0, 13, 23,  ..., -1, -1, -1]], batch_dim=0, seq_dim=1)
-  (cooking_activity) BatchList(data=['cereals', 'cereals', 'cereals', ..., 'tea'])
-  (end_time) tensor([[[  9.],
-             [269.],
-             [474.],
-             ...,
-             [ nan],
-             [ nan],
-             [ nan]],
-
-            [[ 39.],
-             [322.],
-             [521.],
-             ...,
-             [ nan],
-             [ nan],
-             [ nan]],
-
-            [[ 26.],
-             [190.],
-             [362.],
-             ...,
-             [ nan],
-             [ nan],
-             [ nan]],
-
-            ...,
-
-            [[448.],
-             [558.],
-             [754.],
-             ...,
-             [ nan],
-             [ nan],
-             [ nan]],
-
-            [[ 11.],
-             [101.],
-             [316.],
-             ...,
-             [ nan],
-             [ nan],
-             [ nan]],
-
-            [[ 37.],
-             [ 92.],
-             [229.],
-             ...,
-             [ nan],
-             [ nan],
-             [ nan]]], batch_dim=0, seq_dim=1)
-  (person_id) BatchList(data=['P16', 'P17', 'P18', ..., 'P54'])
-  (start_time) tensor([[[  1.],
-             [ 10.],
-             [270.],
-             ...,
-             [ nan],
-             [ nan],
-             [ nan]],
-
-            [[  1.],
-             [ 40.],
-             [323.],
-             ...,
-             [ nan],
-             [ nan],
-             [ nan]],
-
-            [[  1.],
-             [ 27.],
-             [191.],
-             ...,
-             [ nan],
-             [ nan],
-             [ nan]],
-
-            ...,
-
-            [[  1.],
-             [449.],
-             [559.],
-             ...,
-             [ nan],
-             [ nan],
-             [ nan]],
-
-            [[  1.],
-             [ 12.],
-             [102.],
-             ...,
-             [ nan],
-             [ nan],
-             [ nan]],
-
-            [[  1.],
-             [ 38.],
-             [ 93.],
-             ...,
-             [ nan],
-             [ nan],
-             [ nan]]], batch_dim=0, seq_dim=1)
+  (action_index) BatchedTensorSeq(dtype=torch.int64, shape=torch.Size([146, 165]), device=cpu, batch_dim=0, seq_dim=1)
+  (cooking_activity) BatchList(batch_size=146)
+  (end_time) BatchedTensorSeq(dtype=torch.float32, shape=torch.Size([146, 165, 1]), device=cpu, batch_dim=0, seq_dim=1)
+  (person_id) BatchList(batch_size=146)
+  (start_time) BatchedTensorSeq(dtype=torch.float32, shape=torch.Size([146, 165, 1]), device=cpu, batch_dim=0, seq_dim=1)
 )
 ```
 
@@ -592,119 +523,17 @@ from aroma.datasets.breakfast import filter_batch_by_dataset_split, load_event_d
 
 data, metadata = load_event_data(Path("/path/to/data/breakfast/segmentation_coarse/"))
 data_test = filter_batch_by_dataset_split(data, "test1")
-print(data_test)
+print(data_test.summary())
 ```
 
 The output should look like:
 
 ```textmate
 BatchDict(
-  (action_index) tensor([[ 0, 16, 21,  ..., -1, -1, -1],
-            [ 0, 21,  1,  ..., -1, -1, -1],
-            [ 0, 16, 21,  ..., -1, -1, -1],
-            ...,
-            [ 0, 25, 23,  ..., -1, -1, -1],
-            [ 0, 25, 23,  ..., -1, -1, -1],
-            [ 0, 25, 23,  ..., -1, -1, -1]], batch_dim=0, seq_dim=1)
-  (cooking_activity) BatchList(data=['cereals', 'cereals', 'cereals', ..., 'tea'])
-  (end_time) tensor([[[ 30.],
-             [150.],
-             [428.],
-             ...,
-             [ nan],
-             [ nan],
-             [ nan]],
-
-            [[ 55.],
-             [233.],
-             [405.],
-             ...,
-             [ nan],
-             [ nan],
-             [ nan]],
-
-            [[ 13.],
-             [246.],
-             [624.],
-             ...,
-             [ nan],
-             [ nan],
-             [ nan]],
-
-            ...,
-
-            [[ 48.],
-             [168.],
-             [323.],
-             ...,
-             [ nan],
-             [ nan],
-             [ nan]],
-
-            [[ 96.],
-             [173.],
-             [391.],
-             ...,
-             [ nan],
-             [ nan],
-             [ nan]],
-
-            [[ 10.],
-             [110.],
-             [295.],
-             ...,
-             [ nan],
-             [ nan],
-             [ nan]]], batch_dim=0, seq_dim=1)
-  (person_id) BatchList(data=['P03', 'P04', 'P05', ..., 'P15'])
-  (start_time) tensor([[[  1.],
-             [ 31.],
-             [151.],
-             ...,
-             [ nan],
-             [ nan],
-             [ nan]],
-
-            [[  1.],
-             [ 56.],
-             [234.],
-             ...,
-             [ nan],
-             [ nan],
-             [ nan]],
-
-            [[  1.],
-             [ 14.],
-             [247.],
-             ...,
-             [ nan],
-             [ nan],
-             [ nan]],
-
-            ...,
-
-            [[  1.],
-             [ 49.],
-             [169.],
-             ...,
-             [ nan],
-             [ nan],
-             [ nan]],
-
-            [[  1.],
-             [ 97.],
-             [174.],
-             ...,
-             [ nan],
-             [ nan],
-             [ nan]],
-
-            [[  1.],
-             [ 11.],
-             [111.],
-             ...,
-             [ nan],
-             [ nan],
-             [ nan]]], batch_dim=0, seq_dim=1)
+  (action_index) BatchedTensorSeq(dtype=torch.int64, shape=torch.Size([111, 165]), device=cpu, batch_dim=0, seq_dim=1)
+  (cooking_activity) BatchList(batch_size=111)
+  (end_time) BatchedTensorSeq(dtype=torch.float32, shape=torch.Size([111, 165, 1]), device=cpu, batch_dim=0, seq_dim=1)
+  (person_id) BatchList(batch_size=111)
+  (start_time) BatchedTensorSeq(dtype=torch.float32, shape=torch.Size([111, 165, 1]), device=cpu, batch_dim=0, seq_dim=1)
 )
 ```

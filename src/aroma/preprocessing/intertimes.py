@@ -71,11 +71,11 @@ def compute_inter_times(time: BatchedTensorSeq) -> BatchedTensorSeq:
     Raises:
         TypeError if the input is not a ``BatchedTensorSeq``.
     """
-    if isinstance(time, BatchedTensorSeq):
-        return BatchedTensorSeq(
-            compute_inter_times_tensor(time.align_to_batch_seq().data, batch_first=True)
-        )
-    raise TypeError(f"Incorrect type: {type(time)}. The supported type is BatchedTensorSeq")
+    if not isinstance(time, BatchedTensorSeq):
+        raise TypeError(f"Incorrect type: {type(time)}. The supported type is BatchedTensorSeq")
+    return BatchedTensorSeq(
+        compute_inter_times_tensor(time.align_to_batch_seq().data, batch_first=True)
+    )
 
 
 def compute_inter_times_tensor(time: Tensor, batch_first: bool = False) -> Tensor:
