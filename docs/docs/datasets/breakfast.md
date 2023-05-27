@@ -7,12 +7,10 @@ individuals in 18
 different kitchens.
 Overall, ∼77 hours of video (> 4 million frames) are recorded.
 The cameras used were webcams, standard industry cameras (Prosilica GE680C) as well as a stereo
-camera (BumbleBee ,
-Pointgrey, Inc).
+camera (BumbleBee , Pointgrey, Inc).
 To balance out viewpoints, we also mirrored videos recorded from laterally-positioned cameras.
 To reduce the overall amount of data, all videos were down-sampled to a resolution of 320×240 pixels
-with a frame rate
-of 15 fps.
+with a frame rate of 15 fps.
 The number of cameras used varied from location to location (n = 3 − 5).
 The cameras were uncalibrated and the position of the cameras changes based on the location.
 
@@ -27,8 +25,7 @@ The cameras were uncalibrated and the position of the cameras changes based on t
 
 The annotation data are stored in a Google Drive. You have to follow the instructions in
 the [Download section](https://serre-lab.clps.brown.edu/resource/breakfast-actions-dataset/#Downloads)
-to download the
-data.
+to download the data.
 
 The annotation data used for the action prediction task are in the `segmentation_coarse.tar.gz`
 and ` segmentation_fine.tar.gz` files. Then, you have to extract the files.
@@ -192,9 +189,7 @@ they are missing:
 from pathlib import Path
 from aroma.datasets.breakfast import fetch_event_data
 
-data, metadata = fetch_event_data(
-    Path("/path/to/data/breakfast/"), name="segmentation_coarse"
-)
+data, metadata = fetch_event_data(Path("/path/to/data/breakfast/"), name="segmentation_coarse")
 ```
 
 By default, the duplicate event sequences are removed.
@@ -205,9 +200,7 @@ You can set `remove_duplicate=False` to keep the duplicate event sequences.
 from pathlib import Path
 from aroma.datasets.breakfast import load_event_data
 
-data, metadata = load_event_data(
-    Path("/path/to/data/breakfast/segmentation_coarse/"), remove_duplicate=False
-)
+data, metadata = load_event_data(Path("/path/to/data/breakfast/segmentation_coarse/"), remove_duplicate=False)
 print(data)
 print(metadata)
 ```
