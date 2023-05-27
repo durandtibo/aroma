@@ -696,16 +696,16 @@ class ActionIndexAdderIterDataPipe(IterDataPipe[dict]):
         )
 
 
-if __name__ == "__main__":
-    logging.basicConfig(level=logging.DEBUG)
-
-    annotation_path = Path("~/Downloads/breakfast/segmentation_coarse")
-    # annotation_path = Path("~/Downloads/breakfast/segmentation_fine")
-    batch, metadata = load_event_data(annotation_path)
-    print(batch)
-    print(metadata)
-
-    from aroma.preprocessing import add_inter_times_
-
-    add_inter_times_(batch, time_key=Annotation.START_TIME, inter_times_key=Annotation.INTER_TIMES)
-    print(batch)
+# if __name__ == "__main__":
+#     logging.basicConfig(level=logging.DEBUG)
+#
+#     annotation_path = Path("~/Downloads/breakfast/segmentation_coarse")
+#     # annotation_path = Path("~/Downloads/breakfast/segmentation_fine")
+#     batch, metadata = load_event_data(annotation_path)
+#     print(batch)
+#     print(metadata)
+#
+#     from aroma.preprocessing import add_inter_times_
+#
+#     add_inter_times_(batch, time_key=Annotation.START_TIME, inter_times_key=Annotation.INTER_TIMES)
+#     print(batch)
