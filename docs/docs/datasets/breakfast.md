@@ -2,18 +2,22 @@
 
 ## Information about the dataset
 
-This dataset contains 10 actions related to breakfast preparation, performed by 52 different individuals in 18
+This dataset contains 10 actions related to breakfast preparation, performed by 52 different
+individuals in 18
 different kitchens.
 Overall, ∼77 hours of video (> 4 million frames) are recorded.
-The cameras used were webcams, standard industry cameras (Prosilica GE680C) as well as a stereo camera (BumbleBee ,
+The cameras used were webcams, standard industry cameras (Prosilica GE680C) as well as a stereo
+camera (BumbleBee ,
 Pointgrey, Inc).
 To balance out viewpoints, we also mirrored videos recorded from laterally-positioned cameras.
-To reduce the overall amount of data, all videos were down-sampled to a resolution of 320×240 pixels with a frame rate
+To reduce the overall amount of data, all videos were down-sampled to a resolution of 320×240 pixels
+with a frame rate
 of 15 fps.
 The number of cameras used varied from location to location (n = 3 − 5).
 The cameras were uncalibrated and the position of the cameras changes based on the location.
 
-- Project webpage: [https://serre-lab.clps.brown.edu/resource/breakfast-actions-dataset/](https://serre-lab.clps.brown.edu/resource/breakfast-actions-dataset/)
+- Project
+  webpage: [https://serre-lab.clps.brown.edu/resource/breakfast-actions-dataset/](https://serre-lab.clps.brown.edu/resource/breakfast-actions-dataset/)
 - Research paper:
   Kuehne, Arslan, and Serre.
   *The Language of Actions: Recovering the Syntax and Semantics of Goal-Directed Human Activities.*
@@ -22,13 +26,25 @@ The cameras were uncalibrated and the position of the cameras changes based on t
 ## Download data
 
 The annotation data are stored in a Google Drive. You have to follow the instructions in
-the [Download section](https://serre-lab.clps.brown.edu/resource/breakfast-actions-dataset/#Downloads) to download the
+the [Download section](https://serre-lab.clps.brown.edu/resource/breakfast-actions-dataset/#Downloads)
+to download the
 data.
 
 The annotation data used for the action prediction task are in the `segmentation_coarse.tar.gz`
 and ` segmentation_fine.tar.gz` files. Then, you have to extract the files.
+It is possible to use the function `download_annotations` to automatically download the data:
 
-The remaining of the documentation assumes the data are stored in the directory `/path/to/data/breakfast/`.
+```pycon
+>>> from pathlib import Path
+>>> from aroma.datasets.breakfast import download_annotations
+>>> download_annotations(Path("/path/to/data/breakfast/"))
+>>> list(path.iterdir())
+[PosixPath('/path/to/data/breakfast/segmentation_coarse'),
+ PosixPath('/path/to/data/breakfast/segmentation_fine')]
+```
+
+The remaining of the documentation assumes the data are stored in the
+directory `/path/to/data/breakfast/`.
 
 ## Action prediction task
 
@@ -36,7 +52,8 @@ This section explains how to prepare the data for the action prediction task.
 
 ### Get the event data
 
-After the data are downloaded, you can get the event sequences by using the `load_event_data` function.
+After the data are downloaded, you can get the event sequences by using the `load_event_data`
+function.
 This function returns the data and metadata.
 The following example shows how to get the event sequences by using the coarse annotations:
 
@@ -44,7 +61,7 @@ The following example shows how to get the event sequences by using the coarse a
 from pathlib import Path
 from aroma.datasets.breakfast import load_event_data
 
-data, metadata = load_event_data(Path("~/Downloads/segmentation_coarse"))
+data, metadata = load_event_data(Path("/path/to/data/breakfast/segmentation_coarse"))
 print(data)
 print(metadata)
 ```
@@ -166,6 +183,18 @@ BatchDict(
   index_to_token=('SIL', 'pour_milk', 'cut_fruit', 'crack_egg', ..., 'stir_tea'),
   token_to_index={'SIL': 0, 'pour_milk': 1, 'cut_fruit': 2, ..., 'stir_tea': 47},
 )}
+```
+
+It is also possible to use the function `fetch_event_data`, which automatically download the data if
+they are missing:
+
+```python
+from pathlib import Path
+from aroma.datasets.breakfast import fetch_event_data
+
+data, metadata = fetch_event_data(
+    Path("/path/to/data/breakfast/"), name="segmentation_coarse"
+)
 ```
 
 By default, the duplicate event sequences are removed.
