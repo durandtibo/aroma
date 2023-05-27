@@ -19,10 +19,10 @@ theme:
 nav:
   - Home: index.md
   - get_started.md
-#  - User Guide:
-#      - quickstart.md
-#      - types.md
-#      - customization.md
+  - Datasets:
+      - datasets/breakfast.md
+#      - datasets/ego4d.md
+#      - datasets/multithumos.md
   - GitHub: https://github.com/durandtibo/aroma
 
 repo_url: https://github.com/durandtibo/aroma

@@ -1281,13 +1281,13 @@ pyyaml = "*"
 
 [[package]]
 name = "redcat"
-version = "0.0.3"
+version = "0.0.4"
 description = "A library to manipulate batches of examples"
 optional = false
 python-versions = ">=3.9,<4.0"
 files = [
-    {file = "redcat-0.0.3-py3-none-any.whl", hash = "sha256:c3ac82d7af2c03c15451c8dd765adfe3685f26ac86a651bbf0f74018707d4509"},
-    {file = "redcat-0.0.3.tar.gz", hash = "sha256:509ff6b9a78a327cc8a820dc90545f2eb5ddd1ec19c472c4223088ba8ae9ad21"},
+    {file = "redcat-0.0.4-py3-none-any.whl", hash = "sha256:83cfed6f0519c74f4a2547957c532b21f53a0a8dfa3a69cbd26961b169b48d11"},
+    {file = "redcat-0.0.4.tar.gz", hash = "sha256:a64cb691ac90e26e0ec28054f18f2c0e19fdbbd2de49f4961e4fd03c035fdbd4"},
 ]
 
 [package.dependencies]
@@ -1812,4 +1812,4 @@ all = ["gdown", "polars"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "66f1caeaae08e1aac207e022a3bd924dd2e69719586dd30008d0276a62103582"
+content-hash = "7e05d4f013c3080dc108d0a2ef667d1b5ca10a491a00aa2d12ff993df9c272ba"
