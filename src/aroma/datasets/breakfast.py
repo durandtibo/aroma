@@ -48,6 +48,7 @@ from coola import objects_are_equal
 from gravitorch.datapipes.iter import FileFilter, PathLister, SourceWrapper
 from gravitorch.utils.format import str_indent
 from gravitorch.utils.mapping import convert_to_dict_of_lists
+from gravitorch.utils.path import sanitize_path
 from redcat import BatchDict, BatchList
 from redcat.tensorseq import from_sequences
 from torch.utils.data import IterDataPipe
@@ -177,6 +178,7 @@ def fetch_event_data(
     valid_names = set(URLS.keys())
     if name not in valid_names:
         raise RuntimeError(f"Incorrect name: {name}. Valid names are: {valid_names}")
+    path = sanitize_path(path)
     download_annotations(path, force_download)
     return load_event_data(path.joinpath(name), remove_duplicate)
 
@@ -204,6 +206,7 @@ def download_annotations(path: Path, force_download: bool = False) -> None:
         [PosixPath('//path/to/data/segmentation_coarse'),
          PosixPath('/path/to/data/segmentation_fine')]
     """
+    path = sanitize_path(path)
     logger.info("Downloading Breakfast dataset annotations...")
     for name, url in URLS.items():
         if not path.joinpath(name).is_dir() or force_download:
@@ -261,6 +264,7 @@ def load_event_data(path: Path, remove_duplicate: bool = True) -> tuple[BatchDic
           token_to_index={'garbage': 0, 'move': 1, 'carry_knife': 2, ..., 'carry_capSalt': 177},
         )}
     """
+    path = sanitize_path(path)
     examples = load_event_examples(path=path, remove_duplicate=remove_duplicate)
     action_vocab = create_action_vocabulary(examples)
     batch = convert_to_dict_of_lists(
@@ -428,6 +432,7 @@ def load_event_examples(path: Path, remove_duplicate: bool = True) -> tuple[dict
          'person_id': 'P03',
          'cooking_activity': 'cereals'}
     """
+    path = sanitize_path(path)
     dp = PathLister(SourceWrapper([path]), pattern="**/*.txt")
     dp = FileFilter(dp)
     dp = TxtAnnotationReaderIterDataPipe(dp)
@@ -515,6 +520,7 @@ def load_action_annotation(path: Path) -> dict:
         dict: A dictionary with the sequence of actions, the start
             time and end time of each action.
     """
+    path = sanitize_path(path)
     if path.suffix != ".txt":
         raise ValueError(f"This function can only parse `.txt` files but received {path.suffix}")
     logger.info(f"Reading {path}...")
@@ -693,8 +699,8 @@ class ActionIndexAdderIterDataPipe(IterDataPipe[dict]):
 # if __name__ == "__main__":
 #     logging.basicConfig(level=logging.DEBUG)
 #
-#     annotation_path = Path("/Users/thibaut/Downloads/segmentation_coarse")
-#     # annotation_path = Path("/Users/thibaut/Downloads/segmentation_fine")
+#     annotation_path = Path("~/Downloads/segmentation_coarse")
+#     # annotation_path = Path("~/Downloads/segmentation_fine")
 #     batch, metadata = load_event_data(annotation_path)
 #     print(batch)
 #     print(metadata)
