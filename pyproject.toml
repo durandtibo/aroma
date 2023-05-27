@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "aroma"
-version = "0.0.0a16"
+version = "0.0.0a17"
 description = "A library to prepare asynchronous time series datasets"
 readme = "README.md"
 authors = ["Thibaut Durand <durand.tibo+gh@gmail.com>"]
@@ -34,7 +34,7 @@ coola = "^0.0,>=0.0.7"
 gravitorch = "^0.0,>=0.0.11"
 numpy = "^1.24"
 python = "^3.9"
-redcat = "^0.0,>=0.0.3"
+redcat = "^0.0,>=0.0.4"
 torch = "^2.0"
 
 gdown = { version = "^4.7", optional = true }
