@@ -23,7 +23,7 @@ nav:
   - Datasets:
       - datasets/breakfast.md
 #      - datasets/ego4d.md
-#      - datasets/multithumos.md
+      - datasets/multithumos.md
   - GitHub: https://github.com/durandtibo/aroma
 
 repo_url: https://github.com/durandtibo/aroma
