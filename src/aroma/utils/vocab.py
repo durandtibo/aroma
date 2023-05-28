@@ -5,7 +5,12 @@ from collections import Counter
 from collections.abc import Hashable
 from typing import Any, Generic, TypeVar
 
-from coola import objects_are_equal
+from coola import (
+    BaseEqualityOperator,
+    BaseEqualityTester,
+    EqualityTester,
+    objects_are_equal,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -250,7 +255,7 @@ class Vocabulary(Generic[T]):
             >>> vocab.get_index_to_token()
             ('b', 'a', 'c', 'd')
         """
-        return Vocabulary(counter=self.counter + other.counter)
+        return Vocabulary(self.counter + other.counter)
 
     def sub(self, other: "Vocabulary") -> "Vocabulary":
         r"""Creates a new vocabulary where elements from ``other`` are removed
@@ -277,7 +282,7 @@ class Vocabulary(Generic[T]):
             >>> vocab.get_index_to_token()
             ('a', 'c')
         """
-        return Vocabulary(counter=self.counter - other.counter)
+        return Vocabulary(self.counter - other.counter)
 
     def sort_by_count(self, descending: bool = True) -> "Vocabulary":
         r"""Creates a new vocabulary where the counter is sorted by
@@ -308,7 +313,7 @@ class Vocabulary(Generic[T]):
             ('b', 'c', 'a')
         """
         return Vocabulary(
-            counter=Counter(
+            Counter(
                 dict(
                     sorted(
                         self.counter.items(),
@@ -344,7 +349,7 @@ class Vocabulary(Generic[T]):
             >>> vocab.get_index_to_token()
             ('a', 'b', 'c')
         """
-        return Vocabulary(counter=Counter(dict(sorted(self.counter.items(), reverse=descending))))
+        return Vocabulary(Counter(dict(sorted(self.counter.items(), reverse=descending))))
 
     def most_common(self, max_num_tokens: int) -> "Vocabulary":
         r"""Gets a new vocabulary with the ``max_num_tokens`` most common tokens
@@ -371,4 +376,32 @@ class Vocabulary(Generic[T]):
             >>> vocab.get_index_to_token()
             ('b', 'c')
         """
-        return Vocabulary(counter=Counter(dict(self.counter.most_common(max_num_tokens))))
+        return Vocabulary(Counter(dict(self.counter.most_common(max_num_tokens))))
+
+
+class VocabularyEqualityOperator(BaseEqualityOperator[Vocabulary]):
+    r"""Implements an equality operator for ``Vocabulary`` objects."""
+
+    def equal(
+        self,
+        tester: BaseEqualityTester,
+        object1: Vocabulary,
+        object2: Any,
+        show_difference: bool = False,
+    ) -> bool:
+        if not isinstance(object2, Vocabulary):
+            if show_difference:
+                logger.info(f"object2 is not a `Vocabulary` object: {type(object2)}")
+            return False
+        object_equal = object1.equal(object2)
+        if show_difference and not object_equal:
+            logger.info(
+                f"`Vocabulary` objects are different\nobject1=\n{object1}\nobject2=\n{object2}"
+            )
+        return object_equal
+
+
+if not EqualityTester.has_equality_operator(Vocabulary):
+    EqualityTester.add_equality_operator(
+        Vocabulary, VocabularyEqualityOperator()
+    )  # pragma: no cover
