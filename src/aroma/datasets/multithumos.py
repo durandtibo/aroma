@@ -500,18 +500,18 @@ def filter_validation_examples(examples: Sequence[Mapping]) -> list[Mapping]:
     ]
 
 
-if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
-    path = Path("~/Downloads/multithumos")
-    download_annotations(path)
-    vocab = create_action_vocabulary(path)
-    print(vocab)
-    print(vocab.get_index_to_token())
-
-    examples = load_event_examples(path, action_vocab=vocab)
-    print(examples[:10])
-
-    data, metadata = load_event_data(path, split="val")
-    print(data.summary())
-    print(data)
-    print(metadata)
+# if __name__ == "__main__":
+#     logging.basicConfig(level=logging.INFO)
+#     path = Path("~/Downloads/multithumos")
+#     download_annotations(path)
+#     vocab = create_action_vocabulary(path)
+#     print(vocab)
+#     print(vocab.get_index_to_token())
+#
+#     examples = load_event_examples(path, action_vocab=vocab)
+#     print(examples[:10])
+#
+#     data, metadata = load_event_data(path, split="val")
+#     print(data.summary())
+#     print(data)
+#     print(metadata)
