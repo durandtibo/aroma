@@ -1,8 +1,10 @@
+import logging
 from collections import Counter
 
-from pytest import mark
+from coola import EqualityTester
+from pytest import LogCaptureFixture, mark
 
-from aroma.utils.vocab import Vocabulary
+from aroma.utils.vocab import Vocabulary, VocabularyEqualityOperator
 
 ################################
 #     Tests for Vocabulary     #
@@ -174,3 +176,75 @@ def test_vocabulary_most_common_100() -> None:
         "c",
         "a",
     )
+
+
+################################################
+#     Tests for VocabularyEqualityOperator     #
+################################################
+
+
+def test_registered_vocabulary_comparators() -> None:
+    assert isinstance(EqualityTester.registry[Vocabulary], VocabularyEqualityOperator)
+
+
+def test_vocabulary_equality_operator_str() -> None:
+    assert str(VocabularyEqualityOperator()) == "VocabularyEqualityOperator()"
+
+
+def test_vocabulary_equality_operator_equal_true() -> None:
+    assert VocabularyEqualityOperator().equal(
+        EqualityTester(),
+        Vocabulary(Counter({"b": 3, "a": 1, "c": 2})),
+        Vocabulary(Counter({"b": 3, "a": 1, "c": 2})),
+    )
+
+
+def test_vocabulary_equality_operator_equal_true_show_difference(caplog: LogCaptureFixture) -> None:
+    with caplog.at_level(logging.INFO):
+        assert VocabularyEqualityOperator().equal(
+            tester=EqualityTester(),
+            object1=Vocabulary(Counter({"b": 3, "a": 1, "c": 2})),
+            object2=Vocabulary(Counter({"b": 3, "a": 1, "c": 2})),
+            show_difference=True,
+        )
+        assert not caplog.messages
+
+
+def test_vocabulary_equality_operator_equal_false_different_value() -> None:
+    assert not VocabularyEqualityOperator().equal(
+        EqualityTester(),
+        Vocabulary(Counter({"b": 3, "a": 1, "c": 2})),
+        Vocabulary(Counter({"b": 3, "a": 1, "c": 3})),
+    )
+
+
+def test_vocabulary_equality_operator_equal_false_different_value_show_difference(
+    caplog: LogCaptureFixture,
+) -> None:
+    with caplog.at_level(logging.INFO):
+        assert not VocabularyEqualityOperator().equal(
+            tester=EqualityTester(),
+            object1=Vocabulary(Counter({"b": 3, "a": 1, "c": 2})),
+            object2=Vocabulary(Counter({"b": 3, "a": 1, "c": 3})),
+            show_difference=True,
+        )
+        assert caplog.messages[0].startswith("`Vocabulary` objects are different")
+
+
+def test_vocabulary_equality_operator_equal_false_different_type() -> None:
+    assert not VocabularyEqualityOperator().equal(
+        EqualityTester(), Vocabulary(Counter({"b": 3, "a": 1, "c": 2})), 42
+    )
+
+
+def test_vocabulary_equality_operator_equal_false_different_type_show_difference(
+    caplog: LogCaptureFixture,
+) -> None:
+    with caplog.at_level(logging.INFO):
+        assert not VocabularyEqualityOperator().equal(
+            tester=EqualityTester(),
+            object1=Vocabulary(Counter({"b": 3, "a": 1, "c": 2})),
+            object2=42,
+            show_difference=True,
+        )
+        assert caplog.messages[0].startswith("object2 is not a `Vocabulary` object")
