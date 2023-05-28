@@ -45,13 +45,14 @@ from pathlib import Path
 
 import torch
 from coola import objects_are_equal
-from gravitorch.datapipes.iter import FileFilter, PathLister, SourceWrapper
+from gravitorch.datapipes.iter import FileFilter, PathLister
 from gravitorch.utils.format import str_indent
 from gravitorch.utils.mapping import convert_to_dict_of_lists
 from gravitorch.utils.path import sanitize_path
 from redcat import BatchDict, BatchList
 from redcat.tensorseq import from_sequences
 from torch.utils.data import IterDataPipe
+from torch.utils.data.datapipes.iter import IterableWrapper
 
 from aroma.utils.download import download_drive_file
 from aroma.utils.vocab import Vocabulary
@@ -164,10 +165,14 @@ def fetch_event_data(
         >>> data, metadata = fetch_event_data(
         ...     Path("/path/to/data/breakfast/"), "segmentation_coarse"
         ... )
-        >>> data.keys()
-        dict_keys(['action_index', 'cooking_activity', 'end_time', 'person_id', 'start_time'])
-        >>> data.batch_size
-        508
+        >>> data.summary()
+        BatchDict(
+          (action_index) BatchedTensorSeq(dtype=torch.int64, shape=torch.Size([508, 25]), device=cpu, batch_dim=0, seq_dim=1)
+          (cooking_activity) BatchList(batch_size=508)
+          (end_time) BatchedTensorSeq(dtype=torch.float32, shape=torch.Size([508, 25, 1]), device=cpu, batch_dim=0, seq_dim=1)
+          (person_id) BatchList(batch_size=508)
+          (start_time) BatchedTensorSeq(dtype=torch.float32, shape=torch.Size([508, 25, 1]), device=cpu, batch_dim=0, seq_dim=1)
+        )
         >>> metadata
         {'action_vocab': Vocabulary(
           counter=Counter({'SIL': 1016, 'pour_milk': 199, 'cut_fruit': 176, ..., 'stir_tea': 2}),
@@ -236,10 +241,14 @@ def load_event_data(path: Path, remove_duplicate: bool = True) -> tuple[BatchDic
         >>> from aroma.datasets.breakfast import load_event_data
         # Dataset built with coarse annotations and without duplicate sequence events.
         >>> data, metadata = load_event_data(Path("/path/to/data/breakfast/segmentation_coarse/"))
-        >>> data.keys()
-        dict_keys(['action_index', 'cooking_activity', 'end_time', 'person_id', 'start_time'])
-        >>> data.batch_size
-        508
+        >>> data.summary()
+        BatchDict(
+          (action_index) BatchedTensorSeq(dtype=torch.int64, shape=torch.Size([508, 25]), device=cpu, batch_dim=0, seq_dim=1)
+          (cooking_activity) BatchList(batch_size=508)
+          (end_time) BatchedTensorSeq(dtype=torch.float32, shape=torch.Size([508, 25, 1]), device=cpu, batch_dim=0, seq_dim=1)
+          (person_id) BatchList(batch_size=508)
+          (start_time) BatchedTensorSeq(dtype=torch.float32, shape=torch.Size([508, 25, 1]), device=cpu, batch_dim=0, seq_dim=1)
+        )
         >>> metadata
         {'action_vocab': Vocabulary(
           counter=Counter({'SIL': 1016, 'pour_milk': 199, 'cut_fruit': 176, ..., 'stir_tea': 2}),
@@ -251,12 +260,24 @@ def load_event_data(path: Path, remove_duplicate: bool = True) -> tuple[BatchDic
         ...     Path("/path/to/data/breakfast/segmentation_coarse/"),
         ...     remove_duplicate=False,
         ... )
-        >>> data.batch_size
-        1712
+        >>> data.summary()
+        BatchDict(
+          (action_index) BatchedTensorSeq(dtype=torch.int64, shape=torch.Size([1712, 25]), device=cpu, batch_dim=0, seq_dim=1)
+          (cooking_activity) BatchList(batch_size=1712)
+          (end_time) BatchedTensorSeq(dtype=torch.float32, shape=torch.Size([1712, 25, 1]), device=cpu, batch_dim=0, seq_dim=1)
+          (person_id) BatchList(batch_size=1712)
+          (start_time) BatchedTensorSeq(dtype=torch.float32, shape=torch.Size([1712, 25, 1]), device=cpu, batch_dim=0, seq_dim=1)
+        )
         # Dataset built with coarse annotations and without duplicate sequence events.
         >>> data, metadata = load_event_data(Path("/path/to/data/breakfast/segmentation_fine/"))
-        >>> data.batch_size
-        257
+        >>> data.summary()
+        BatchDict(
+          (action_index) BatchedTensorSeq(dtype=torch.int64, shape=torch.Size([257, 165]), device=cpu, batch_dim=0, seq_dim=1)
+          (cooking_activity) BatchList(batch_size=257)
+          (end_time) BatchedTensorSeq(dtype=torch.float32, shape=torch.Size([257, 165, 1]), device=cpu, batch_dim=0, seq_dim=1)
+          (person_id) BatchList(batch_size=257)
+          (start_time) BatchedTensorSeq(dtype=torch.float32, shape=torch.Size([257, 165, 1]), device=cpu, batch_dim=0, seq_dim=1)
+        )
         >>> metadata
         {'action_vocab': Vocabulary(
           counter=Counter({'garbage': 774, 'move': 649, ..., 'carry_capSalt': 3}),
@@ -268,7 +289,7 @@ def load_event_data(path: Path, remove_duplicate: bool = True) -> tuple[BatchDic
     examples = load_event_examples(path=path, remove_duplicate=remove_duplicate)
     action_vocab = create_action_vocabulary(examples)
     batch = convert_to_dict_of_lists(
-        tuple(ActionIndexAdderIterDataPipe(SourceWrapper(examples), action_vocab))
+        tuple(ActionIndexAdderIterDataPipe(IterableWrapper(examples), action_vocab))
     )
     return (
         BatchDict(
@@ -433,7 +454,7 @@ def load_event_examples(path: Path, remove_duplicate: bool = True) -> tuple[dict
          'cooking_activity': 'cereals'}
     """
     path = sanitize_path(path)
-    dp = PathLister(SourceWrapper([path]), pattern="**/*.txt")
+    dp = PathLister(IterableWrapper([path]), pattern="**/*.txt")
     dp = FileFilter(dp)
     dp = TxtAnnotationReaderIterDataPipe(dp)
     if remove_duplicate:
@@ -471,10 +492,22 @@ def filter_batch_by_dataset_split(
         ...     load_event_data,
         ... )
         >>> data, metadata = load_event_data(Path("/path/to/data/breakfast/segmentation_coarse/"))
-        >>> filter_batch_by_dataset_split(data, "train1").batch_size
-        386
-        >>> filter_batch_by_dataset_split(data, "test1").batch_size
-        122
+        >>> filter_batch_by_dataset_split(data, "train1")
+        BatchDict(
+          (action_index) BatchedTensorSeq(dtype=torch.int64, shape=torch.Size([386, 25]), device=cpu, batch_dim=0, seq_dim=1)
+          (cooking_activity) BatchList(batch_size=386)
+          (end_time) BatchedTensorSeq(dtype=torch.float32, shape=torch.Size([386, 25, 1]), device=cpu, batch_dim=0, seq_dim=1)
+          (person_id) BatchList(batch_size=386)
+          (start_time) BatchedTensorSeq(dtype=torch.float32, shape=torch.Size([386, 25, 1]), device=cpu, batch_dim=0, seq_dim=1)
+        )
+        >>> filter_batch_by_dataset_split(data, "test1")
+        BatchDict(
+          (action_index) BatchedTensorSeq(dtype=torch.int64, shape=torch.Size([122, 25]), device=cpu, batch_dim=0, seq_dim=1)
+          (cooking_activity) BatchList(batch_size=122)
+          (end_time) BatchedTensorSeq(dtype=torch.float32, shape=torch.Size([122, 25, 1]), device=cpu, batch_dim=0, seq_dim=1)
+          (person_id) BatchList(batch_size=122)
+          (start_time) BatchedTensorSeq(dtype=torch.float32, shape=torch.Size([122, 25, 1]), device=cpu, batch_dim=0, seq_dim=1)
+        )
     """
     indices = []
     valid_person_ids = set(DATASET_SPLITS[split])
