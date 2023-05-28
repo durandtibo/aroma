@@ -16,12 +16,13 @@ __all__ = [
     "Annotation",
     "create_action_vocabulary",
     "download_annotations",
+    "fetch_event_data",
     "filter_test_examples",
     "filter_validation_examples",
-    "load_event_data",
-    "load_event_examples",
     "is_annotation_path_ready",
     "load_all_event_annotations_per_video",
+    "load_event_data",
+    "load_event_examples",
     "load_single_event_annotations_per_video",
     "prepare_event_example",
     "sort_examples_by_video_id",
@@ -63,15 +64,86 @@ class Annotation:
     VIDEO_ID: str = "video_id"
 
 
+def fetch_event_data(
+    path: Path, split: str = "all", force_download: bool = False
+) -> tuple[BatchDict, dict]:
+    r"""Downloads and loads the event data and metadata for MultiTHUMOS.
+
+    Args:
+        path (``pathlib.Path``): Specifies the directory where the
+            dataset annotations are stored.
+        split (str, optional): Specifies the dataset split.
+            The valid values are ``'all'``, ``'val'`` and ``'test'``.
+            Default: ``'all'``
+        force_download (bool, optional): If ``True``, the annotations
+            are downloaded everytime this function is calleed.
+            If ``False``, the annotations are downloaded only if the
+            given path does not contain the annotation data.
+            Default: ``False``
+
+    Returns:
+        tuple: A tuple with the data and metadata.
+
+    Raises:
+        RuntimeError if the split is invalid.
+
+    Example usage:
+
+    .. code-block:: pycon
+
+        >>> from pathlib import Path
+        >>> from aroma.datasets.multithumos import fetch_event_data
+        >>> path = Path("/path/to/data/multithumos")
+        >>> data, metadata = fetch_event_data(path)  # Load all the data i.e. val+test
+        >>> data.summary()
+        BatchDict(
+          (video_id) BatchList(batch_size=413)
+          (action_index) BatchedTensorSeq(dtype=torch.int64, shape=torch.Size([413, 1235]), device=cpu, batch_dim=0, seq_dim=1)
+          (start_time) BatchedTensorSeq(dtype=torch.float32, shape=torch.Size([413, 1235]), device=cpu, batch_dim=0, seq_dim=1)
+          (end_time) BatchedTensorSeq(dtype=torch.float32, shape=torch.Size([413, 1235]), device=cpu, batch_dim=0, seq_dim=1)
+        )
+        >>> metadata
+        {'action_vocab': Vocabulary(
+          counter=Counter({'BaseballPitch': 1, 'BasketballBlock': 1, 'BasketballDribble': 1, ...}),
+          index_to_token=('BaseballPitch', 'BasketballBlock', 'BasketballDribble', ...),
+          token_to_index={'BaseballPitch': 0, 'BasketballBlock': 1, 'BasketballDribble': 2, ...},
+        )}
+        >>> data, metadata = fetch_event_data(path, split="val")
+        >>> data.summary()
+        BatchDict(
+          (video_id) BatchList(batch_size=200)
+          (action_index) BatchedTensorSeq(dtype=torch.int64, shape=torch.Size([200, 622]), device=cpu, batch_dim=0, seq_dim=1)
+          (start_time) BatchedTensorSeq(dtype=torch.float32, shape=torch.Size([200, 622]), device=cpu, batch_dim=0, seq_dim=1)
+          (end_time) BatchedTensorSeq(dtype=torch.float32, shape=torch.Size([200, 622]), device=cpu, batch_dim=0, seq_dim=1)
+        )
+        >>> data, metadata = fetch_event_data(path, split="test")
+        >>> data.summary()
+        BatchDict(
+          (video_id) BatchList(batch_size=213)
+          (action_index) BatchedTensorSeq(dtype=torch.int64, shape=torch.Size([213, 1235]), device=cpu, batch_dim=0, seq_dim=1)
+          (start_time) BatchedTensorSeq(dtype=torch.float32, shape=torch.Size([213, 1235]), device=cpu, batch_dim=0, seq_dim=1)
+          (end_time) BatchedTensorSeq(dtype=torch.float32, shape=torch.Size([213, 1235]), device=cpu, batch_dim=0, seq_dim=1)
+        )
+    """
+    download_annotations(path, force_download)
+    return load_event_data(path, split)
+
+
 def load_event_data(path: Path, split: str = "all") -> tuple[BatchDict, dict]:
     r"""Loads the event data and metadata for MultiTHUMOS.
 
     Args:
         path (``pathlib.Path``): Specifies the directory where the
             dataset annotations are stored.
+        split (str, optional): Specifies the dataset split.
+            The valid values are ``'all'``, ``'val'`` and ``'test'``.
+            Default: ``'all'``
 
     Returns:
         tuple: A tuple with the data and metadata.
+
+    Raises:
+        RuntimeError if the split is invalid.
 
     Example usage:
 

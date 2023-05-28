@@ -14,6 +14,7 @@ from aroma.datasets.multithumos import (
     Annotation,
     create_action_vocabulary,
     download_annotations,
+    fetch_event_data,
     filter_test_examples,
     filter_validation_examples,
     is_annotation_path_ready,
@@ -25,6 +26,61 @@ from aroma.datasets.multithumos import (
     sort_examples_by_video_id,
 )
 from aroma.utils.vocab import Vocabulary
+
+######################################
+#     Tests for fetch_event_data     #
+######################################
+
+
+def test_fetch_event_data_default(tmp_path: Path) -> None:
+    batch = BatchDict(
+        {
+            Annotation.VIDEO_ID: BatchList[str](["video_0", "video_1"]),
+            Annotation.ACTION_INDEX: BatchedTensorSeq(
+                torch.tensor([[5, 3, 3], [1, 2, 0]], dtype=torch.long)
+            ),
+            Annotation.START_TIME: BatchedTensorSeq(
+                torch.tensor([[1.2, 5.1, 7.8], [5.1, 15.1, 0]], dtype=torch.float)
+            ),
+            Annotation.END_TIME: BatchedTensorSeq(
+                torch.tensor([[2.2, 6.1, 8.8], [5.9, 19.5, 0]], dtype=torch.float)
+            ),
+        }
+    )
+    load_mock = Mock(return_value=(batch, {}))
+    with patch("aroma.datasets.multithumos.download_annotations") as download_mock:
+        with patch("aroma.datasets.multithumos.load_event_data", load_mock):
+            assert objects_are_equal(fetch_event_data(tmp_path), (batch, {}))
+            download_mock.assert_called_once_with(tmp_path, False)
+            load_mock.assert_called_once_with(tmp_path, "all")
+
+
+@mark.parametrize("split", ("all", "val", "test"))
+@mark.parametrize("force_download", (True, False))
+def test_fetch_event_data(tmp_path: Path, split: str, force_download: bool) -> None:
+    batch = BatchDict(
+        {
+            Annotation.VIDEO_ID: BatchList[str](["video_0", "video_1"]),
+            Annotation.ACTION_INDEX: BatchedTensorSeq(
+                torch.tensor([[5, 3, 3], [1, 2, 0]], dtype=torch.long)
+            ),
+            Annotation.START_TIME: BatchedTensorSeq(
+                torch.tensor([[1.2, 5.1, 7.8], [5.1, 15.1, 0]], dtype=torch.float)
+            ),
+            Annotation.END_TIME: BatchedTensorSeq(
+                torch.tensor([[2.2, 6.1, 8.8], [5.9, 19.5, 0]], dtype=torch.float)
+            ),
+        }
+    )
+    load_mock = Mock(return_value=(batch, {}))
+    with patch("aroma.datasets.multithumos.download_annotations") as download_mock:
+        with patch("aroma.datasets.multithumos.load_event_data", load_mock):
+            assert objects_are_equal(
+                fetch_event_data(tmp_path, split=split, force_download=force_download), (batch, {})
+            )
+            download_mock.assert_called_once_with(tmp_path, force_download)
+            load_mock.assert_called_once_with(tmp_path, split)
+
 
 #####################################
 #     Tests for load_event_data     #
