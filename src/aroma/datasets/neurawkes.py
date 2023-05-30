@@ -160,6 +160,7 @@ def load_pickle2(path: Path) -> Any:
     Returns:
         The data from the pickle file.
     """
+    path = sanitize_path(path)
     with Path.open(path, "rb") as f:
         return pickle.load(f, encoding="latin1")
 

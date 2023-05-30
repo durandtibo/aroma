@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "aroma"
-version = "0.0.0a24"
+version = "0.0.0a25"
 description = "A library to prepare asynchronous time series datasets"
 readme = "README.md"
 authors = ["Thibaut Durand <durand.tibo+gh@gmail.com>"]
@@ -48,7 +48,7 @@ all = [
 
 [tool.poetry.group.docs.dependencies]
 mkdocs-material = "^9.1"
-mkdocstrings = "^0.21"
+mkdocstrings = "^0.22"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.3"
