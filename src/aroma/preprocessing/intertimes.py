@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 __all__ = ["add_inter_times_", "compute_inter_times_tensor", "compute_inter_times"]
 
 from redcat import BatchDict, BatchedTensorSeq

@@ -12,6 +12,8 @@ http://arxiv.org/pdf/1507.05738)
 Project page: http://ai.stanford.edu/~syyeung/everymoment.html
 """
 
+from __future__ import annotations
+
 __all__ = [
     "Annotation",
     "create_action_vocabulary",

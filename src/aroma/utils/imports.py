@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 __all__ = ["check_polars", "is_polars_available"]
 
 from importlib.util import find_spec

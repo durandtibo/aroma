@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 __all__ = ["Vocabulary"]
 
 import logging
@@ -231,7 +233,7 @@ class Vocabulary(Generic[T]):
             "token_to_index": self._token_to_index,
         }
 
-    def add(self, other: "Vocabulary") -> "Vocabulary":
+    def add(self, other: Vocabulary) -> Vocabulary:
         r"""Creates a new vocabulary where elements from ``other`` are added to
         ``self``.
 
@@ -257,7 +259,7 @@ class Vocabulary(Generic[T]):
         """
         return Vocabulary(self.counter + other.counter)
 
-    def sub(self, other: "Vocabulary") -> "Vocabulary":
+    def sub(self, other: Vocabulary) -> Vocabulary:
         r"""Creates a new vocabulary where elements from ``other`` are removed
         from ``self``.
 
@@ -284,7 +286,7 @@ class Vocabulary(Generic[T]):
         """
         return Vocabulary(self.counter - other.counter)
 
-    def sort_by_count(self, descending: bool = True) -> "Vocabulary":
+    def sort_by_count(self, descending: bool = True) -> Vocabulary:
         r"""Creates a new vocabulary where the counter is sorted by
         count.
 
@@ -324,7 +326,7 @@ class Vocabulary(Generic[T]):
             )
         )
 
-    def sort_by_token(self, descending: bool = False) -> "Vocabulary":
+    def sort_by_token(self, descending: bool = False) -> Vocabulary:
         r"""Creates a new vocabulary where the counter is sorted by
         token.
 
@@ -351,7 +353,7 @@ class Vocabulary(Generic[T]):
         """
         return Vocabulary(Counter(dict(sorted(self.counter.items(), reverse=descending))))
 
-    def most_common(self, max_num_tokens: int) -> "Vocabulary":
+    def most_common(self, max_num_tokens: int) -> Vocabulary:
         r"""Gets a new vocabulary with the ``max_num_tokens`` most common tokens
         of the current vocabulary.
 
