@@ -17,6 +17,8 @@ https://serre-lab.clps.brown.edu/resource/breakfast-actions-dataset/#Downloads
 The documentation assumes the data are downloaded in the directory `/path/to/data/breakfast/`.
 """
 
+from __future__ import annotations
+
 __all__ = [
     "ActionIndexAdderIterDataPipe",
     "Annotation",

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 __all__ = ["gdown_available"]
 
 from pytest import mark

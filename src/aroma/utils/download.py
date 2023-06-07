@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 __all__ = ["download_drive_file"]
 
 from pathlib import Path

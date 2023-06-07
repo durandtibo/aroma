@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 __all__ = ["Annotation", "load_event_data", "load_event_examples"]
 
 import logging
