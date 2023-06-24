@@ -193,6 +193,21 @@ def test_vocabulary_equality_operator_str() -> None:
     assert str(VocabularyEqualityOperator()) == "VocabularyEqualityOperator()"
 
 
+def test_vocabulary_equality_operator__eq__true() -> None:
+    assert VocabularyEqualityOperator() == VocabularyEqualityOperator()
+
+
+def test_vocabulary_equality_operator__eq__false() -> None:
+    assert VocabularyEqualityOperator() != 123
+
+
+def test_vocabulary_equality_operator_clone() -> None:
+    op = VocabularyEqualityOperator()
+    op_cloned = op.clone()
+    assert op is not op_cloned
+    assert op == op_cloned
+
+
 def test_vocabulary_equality_operator_equal_true() -> None:
     assert VocabularyEqualityOperator().equal(
         EqualityTester(),
