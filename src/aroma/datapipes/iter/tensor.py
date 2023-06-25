@@ -2,7 +2,7 @@ from __future__ import annotations
 
 __all__ = ["MapOfTensorConverterIterDataPipe"]
 
-from collections.abc import Hashable, MutableMapping
+from collections.abc import Hashable, MutableMapping, Iterator
 from typing import Any
 
 import torch
@@ -26,7 +26,7 @@ class MapOfTensorConverterIterDataPipe(IterDataPipe[MutableMapping[Hashable, Ten
     def __init__(self, datapipe: IterDataPipe[MutableMapping[Hashable, Any]]) -> None:
         self._datapipe = datapipe
 
-    def __iter__(self) -> IterDataPipe[MutableMapping[Hashable, Tensor]]:
+    def __iter__(self) -> Iterator[MutableMapping[Hashable, Tensor]]:
         for data in self._datapipe:
             for key, value in data.items():
                 if isinstance(value, (list, tuple)):
