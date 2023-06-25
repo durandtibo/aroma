@@ -384,6 +384,12 @@ class Vocabulary(Generic[T]):
 class VocabularyEqualityOperator(BaseEqualityOperator[Vocabulary]):
     r"""Implements an equality operator for ``Vocabulary`` objects."""
 
+    def __eq__(self, other: Any) -> bool:
+        return isinstance(other, self.__class__)
+
+    def clone(self) -> VocabularyEqualityOperator:
+        return self.__class__()
+
     def equal(
         self,
         tester: BaseEqualityTester,
@@ -403,7 +409,5 @@ class VocabularyEqualityOperator(BaseEqualityOperator[Vocabulary]):
         return object_equal
 
 
-if not EqualityTester.has_equality_operator(Vocabulary):
-    EqualityTester.add_equality_operator(
-        Vocabulary, VocabularyEqualityOperator()
-    )  # pragma: no cover
+if not EqualityTester.has_operator(Vocabulary):
+    EqualityTester.add_operator(Vocabulary, VocabularyEqualityOperator())  # pragma: no cover

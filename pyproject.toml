@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "aroma"
-version = "0.0.0a26"
+version = "0.0.0a27"
 description = "A library to prepare asynchronous time series datasets"
 readme = "README.md"
 authors = ["Thibaut Durand <durand.tibo+gh@gmail.com>"]
@@ -30,15 +30,15 @@ packages = [
 
 [tool.poetry.dependencies]
 # Core dependencies
-coola = "^0.0,>=0.0.7"
-gravitorch = "^0.0,>=0.0.11"
+coola = ">=0.0.12,<1.0"
+gravitorch = ">=0.0.11,<1.0"
 numpy = "^1.24"
 python = "^3.9"
-redcat = "^0.0,>=0.0.5"
+redcat = ">=0.0.6,<1.0"
 torch = "^2.0"
 
 gdown = { version = "^4.7", optional = true }
-polars = { version = "^0.17", optional = true }
+polars = { version = "^0.18", optional = true }
 
 [tool.poetry.extras]
 all = [
@@ -59,7 +59,7 @@ pylint = "^2.17"
 pytest = "^7.3"
 pytest-cov = "^4.1"
 pytest-timeout = "^2.1"
-ruff = "^0.0,>=0.0.270"
+ruff = ">=0.0.275,<1.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
