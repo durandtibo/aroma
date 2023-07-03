@@ -426,32 +426,32 @@ dev = ["flake8", "markdown", "twine", "wheel"]
 
 [[package]]
 name = "gravitorch"
-version = "0.0.13"
+version = "0.0.17"
 description = "A library to train ML models with PyTorch"
 optional = false
 python-versions = ">=3.9,<4.0"
 files = [
-    {file = "gravitorch-0.0.13-py3-none-any.whl", hash = "sha256:e1a84979da1c896f1032bad1520b447e300b6e3871542fbf4bc06e7099b749df"},
-    {file = "gravitorch-0.0.13.tar.gz", hash = "sha256:e3afe0494de91ec43152d73980a3144daf2d74429fd903082f76e7477cc8a962"},
+    {file = "gravitorch-0.0.17-py3-none-any.whl", hash = "sha256:01598c290418c339c75382413dd04b2994894a17a1c47de422afa934c8ef537d"},
+    {file = "gravitorch-0.0.17.tar.gz", hash = "sha256:3fb4bdf0246629a6d85e210f116d23590d04e7e9ef149f04232ee712a79d0fb2"},
 ]
 
 [package.dependencies]
-coola = ">=0.0.7,<0.1"
-hya = ">=0.0.10,<0.1"
+coola = ">=0.0.12,<1.0"
+hya = ">=0.0.10,<1.0"
 hydra-core = ">=1.3,<2.0"
 numpy = ">=1.24,<2.0"
-objectory = ">=0.0.2,<0.1"
+objectory = ">=0.0.5,<1.0"
 psutil = ">=5.9,<6.0"
 pytorch-ignite = [
-    {version = ">=0.4.12,<0.5", markers = "python_version >= \"3.11\" and python_version < \"4.0\""},
-    {version = ">=0.4,<0.5", markers = "python_version < \"3.11\" or python_version >= \"4.0\""},
+    {version = ">=0.4.12,<1.0", markers = "python_version >= \"3.11\" and python_version < \"4.0\""},
+    {version = ">=0.4,<1.0", markers = "python_version < \"3.11\" or python_version >= \"4.0\""},
 ]
 tabulate = ">=0.9,<0.10"
 torch = ">=2.0,<3.0"
 tqdm = ">=4.65,<5.0"
 
 [package.extras]
-all = ["accelerate (>=0.19,<0.20)", "colorlog (>=6.7,<7.0)", "matplotlib (>=3.7,<4.0)", "pillow (>=9.5,<10.0)", "tensorboard (>=2.13,<3.0)", "torchdata (>=0.6,<0.7)", "torchvision (>=0.15,<0.16)"]
+all = ["accelerate (>=0.20.3,<1.0)", "colorlog (>=6.7,<7.0)", "matplotlib (>=3.7,<4.0)", "pillow (>=9.5,<10.0)", "tensorboard (>=2.13,<3.0)", "torchdata (>=0.6,<0.7)", "torchvision (>=0.15,<0.16)"]
 tb = ["tensorboard (>=2.13,<3.0)"]
 vision = ["pillow (>=9.5,<10.0)", "torchvision (>=0.15,<0.16)"]
 
@@ -918,13 +918,13 @@ files = [
 
 [[package]]
 name = "objectory"
-version = "0.0.2"
+version = "0.0.5"
 description = "A light library for general purpose object factories"
 optional = false
 python-versions = ">=3.9,<4.0"
 files = [
-    {file = "objectory-0.0.2-py3-none-any.whl", hash = "sha256:5e7faf6b0aff30ddf5a58f295d0b5e5a68554bcbf9079c61169ff916da5509cc"},
-    {file = "objectory-0.0.2.tar.gz", hash = "sha256:e5510207e384c35817011af1608d93482419ff37a90565718221ba2d9f153381"},
+    {file = "objectory-0.0.5-py3-none-any.whl", hash = "sha256:cdcc20554724417ffada023e6981179891bd5ac3560c9482fe049dd71d2c5eac"},
+    {file = "objectory-0.0.5.tar.gz", hash = "sha256:8e41d7a42f7174b0d9273b608d0594f7b50c5a589f95a7ef8fae3e88c0d08143"},
 ]
 
 [package.dependencies]
