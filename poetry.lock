@@ -25,8 +25,8 @@ files = [
 lazy-object-proxy = ">=1.4.0"
 typing-extensions = {version = ">=4.0.0", markers = "python_version < \"3.11\""}
 wrapt = [
-    {version = ">=1.14,<2", markers = "python_version >= \"3.11\""},
     {version = ">=1.11,<2", markers = "python_version < \"3.11\""},
+    {version = ">=1.14,<2", markers = "python_version >= \"3.11\""},
 ]
 
 [[package]]
@@ -443,8 +443,8 @@ numpy = ">=1.24,<2.0"
 objectory = ">=0.0.2,<0.1"
 psutil = ">=5.9,<6.0"
 pytorch-ignite = [
-    {version = ">=0.4.12,<0.5", markers = "python_version >= \"3.11\" and python_version < \"4.0\""},
     {version = ">=0.4,<0.5", markers = "python_version < \"3.11\" or python_version >= \"4.0\""},
+    {version = ">=0.4.12,<0.5", markers = "python_version >= \"3.11\" and python_version < \"4.0\""},
 ]
 tabulate = ">=0.9,<0.10"
 torch = ">=2.0,<3.0"
@@ -999,28 +999,31 @@ testing = ["pytest", "pytest-benchmark"]
 
 [[package]]
 name = "polars"
-version = "0.18.4"
+version = "0.18.12"
 description = "Blazingly fast DataFrame library"
 optional = true
-python-versions = ">=3.7"
+python-versions = ">=3.8"
 files = [
-    {file = "polars-0.18.4-cp37-abi3-macosx_10_7_x86_64.whl", hash = "sha256:3adfd39f84387f8589735e5c57f466c7ba19812140bc64248b9602755915c52f"},
-    {file = "polars-0.18.4-cp37-abi3-macosx_11_0_arm64.whl", hash = "sha256:5658f9751d93451549ecf429eb6486b203a86130132310c520cd1336d15ca258"},
-    {file = "polars-0.18.4-cp37-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:4bbc04db1d765f7cad287204a014e8e10bb2245f1910e26cd99964333e3682c6"},
-    {file = "polars-0.18.4-cp37-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:f9117544d86542954588e295127f3892c15e09db04c474a0d8d830735154a54c"},
-    {file = "polars-0.18.4-cp37-abi3-win_amd64.whl", hash = "sha256:a033ee71d8fde63ac71c7579230d31372cdaddf1df4227a537d96b91a58abd29"},
-    {file = "polars-0.18.4.tar.gz", hash = "sha256:136d8cdbf3c1ec33ab577536ac35a10701ec3dfd21b54cb757ee9b0e0f525a85"},
+    {file = "polars-0.18.12-cp38-abi3-macosx_10_7_x86_64.whl", hash = "sha256:7cb91d9f2130ef8241570890bd861937bfd17f7af9cc62a1fc9ad8e49f345e2a"},
+    {file = "polars-0.18.12-cp38-abi3-macosx_11_0_arm64.whl", hash = "sha256:b68dea5e10c5b1faee5bd86f00a10f31ac4023d022f147eba60824ff405f88e3"},
+    {file = "polars-0.18.12-cp38-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:a675d775cdcacd94ebbfd1c81cf20693bc4ad993cbf472a1347f50e379da37b0"},
+    {file = "polars-0.18.12-cp38-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:5759e814200f8069e683da067219ea7c5918bc7248685447cc54a9b4283c3dab"},
+    {file = "polars-0.18.12-cp38-abi3-win_amd64.whl", hash = "sha256:ab30d6212c8395134f1e03aea214dbd1babac49074666aab2de9a1cfcdedfb71"},
+    {file = "polars-0.18.12.tar.gz", hash = "sha256:6e41baffab92b2fa752f97e5cd397ea9d8aa43b4fd5c5d3a5b74f08c291bdd67"},
 ]
 
 [package.extras]
-all = ["polars[connectorx,deltalake,fsspec,matplotlib,numpy,pandas,pyarrow,sqlalchemy,timezone,xlsx2csv,xlsxwriter]"]
+adbc = ["adbc_driver_sqlite"]
+all = ["polars[adbc,cloudpickle,connectorx,deltalake,fsspec,matplotlib,numpy,pandas,pyarrow,pydantic,sqlalchemy,timezone,xlsx2csv,xlsxwriter]"]
+cloudpickle = ["cloudpickle"]
 connectorx = ["connectorx"]
-deltalake = ["deltalake (>=0.8.0)"]
+deltalake = ["deltalake (>=0.10.0)"]
 fsspec = ["fsspec"]
 matplotlib = ["matplotlib"]
 numpy = ["numpy (>=1.16.0)"]
 pandas = ["pandas", "pyarrow (>=7.0.0)"]
 pyarrow = ["pyarrow (>=7.0.0)"]
+pydantic = ["pydantic"]
 sqlalchemy = ["pandas", "sqlalchemy"]
 timezone = ["backports.zoneinfo", "tzdata"]
 xlsx2csv = ["xlsx2csv (>=0.8.0)"]
@@ -1099,8 +1102,8 @@ files = [
 astroid = ">=2.15.4,<=2.17.0-dev0"
 colorama = {version = ">=0.4.5", markers = "sys_platform == \"win32\""}
 dill = [
-    {version = ">=0.3.6", markers = "python_version >= \"3.11\""},
     {version = ">=0.2", markers = "python_version < \"3.11\""},
+    {version = ">=0.3.6", markers = "python_version >= \"3.11\""},
 ]
 isort = ">=4.2.5,<6"
 mccabe = ">=0.6,<0.8"
