@@ -38,7 +38,7 @@ redcat = ">=0.0.6,<1.0"
 torch = "^2.0"
 
 gdown = { version = "^4.7", optional = true }
-polars = { version = "^0.18", optional = true }
+polars = { version = ">=0.18,<0.20", optional = true }
 
 [tool.poetry.extras]
 all = [
